@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ficha Clínica - Anamnese e Avaliação de Lesões</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            border-left: 4px solid #3498db;
+            padding-left: 20px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="date"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #3498db;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #3498db;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 30px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+        }
+
+        .measurement-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Ficha Clínica</h1>
+            <p>Anamnese, Avaliação da Lesão e Plano de Cuidados</p>
+        </div>
+
+        <div class="form-container">
+            <form id="fichaClinica" action="#" method="POST">
+                <!-- Dados Pessoais -->
+                <div class="section">
+                    <h2 class="section-title">Dados Pessoais</h2>
+                    
+                    <div class="form-group">
+                        <label for="nome">Nome Completo <span class="required">*</span></label>
+                        <input type="text" id="nome" name="nome" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="idade">Idade</label>
+                            <input type="number" id="idade" name="idade" min="0" max="120">
+                        </div>
+                        <div class="form-group">
+                            <label for="sexo">Sexo</label>
+                            <select id="sexo" name="sexo">
+                                <option value="">Selecione...</option>
+                                <option value="feminino">Feminino</option>
+                                <option value="masculino">Masculino</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="endereco">Endereço</label>
+                        <input type="text" id="endereco" name="endereco">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="telefone">Telefone</label>
+                            <input type="text" id="telefone" name="telefone">
+                        </div>
+                        <div class="form-group">
+                            <label for="responsavel">Responsável/Cuidador</label>
+                            <input type="text" id="responsavel" name="responsavel">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Anamnese -->
+                <div class="section">
+                    <h2 class="section-title">Anamnese</h2>
+                    
+                    <div class="form-group">
+                        <label for="queixas">Queixas Principais</label>
+                        <textarea id="queixas" name="queixas" placeholder="Descreva as principais queixas do paciente..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Condições de Saúde <span class="required">*</span></label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="doencas_cronicas" name="condicoes_saude[]" value="doencas_cronicas">
+                                <label for="doencas_cronicas">Doenças crônicas / autoimunes / vascular / câncer</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Medicamentos <span class="required">*</span></label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="uso_medicamentos" name="medicamentos[]" value="uso_medicamentos">
+                                <label for="uso_medicamentos">Uso de medicamentos</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="quais_medicamentos">Quais medicamentos?</label>
+                        <textarea id="quais_medicamentos" name="quais_medicamentos" placeholder="Liste os medicamentos em uso..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Histórico Médico <span class="required">*</span></label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="cirurgia_recente" name="historico[]" value="cirurgia_recente">
+                                <label for="cirurgia_recente">Cirurgia recente ou internamento</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="possui_alergias" name="historico[]" value="possui_alergias">
+                                <label for="possui_alergias">Possui alergias</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="descricao_alergias">Descrição das alergias</label>
+                        <textarea id="descricao_alergias" name="descricao_alergias" placeholder="Descreva as alergias conhecidas..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Hábitos e Estilo de Vida <span class="required">*</span></label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="boa_qualidade_sono" name="habitos[]" value="boa_qualidade_sono">
+                                <label for="boa_qualidade_sono">Boa qualidade do sono</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="tabagismo" name="habitos[]" value="tabagismo">
+                                <label for="tabagismo">Tabagismo</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="etilismo" name="habitos[]" value="etilismo">
+                                <label for="etilismo">Etilismo</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Dispositivos Médicos <span class="required">*</span></label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="marcapasso" name="dispositivos[]" value="marcapasso">
+                                <label for="marcapasso">Portador de marcapasso</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="proteses" name="dispositivos[]" value="proteses">
+                                <label for="proteses">Possui próteses</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mobilidade</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="acamado" name="mobilidade[]" value="acamado">
+                                <label for="acamado">Acamado</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="com_auxilio" name="mobilidade[]" value="com_auxilio">
+                                <label for="com_auxilio">Com auxílio</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="sedentario" name="mobilidade[]" value="sedentario">
+                                <label for="sedentario">Sedentário</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="atividade_fisica" name="mobilidade[]" value="atividade_fisica">
+                                <label for="atividade_fisica">Pratica atividade física</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="peso">Peso (kg)</label>
+                            <input type="number" id="peso" name="peso" step="0.1" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="altura">Altura (cm)</label>
+                            <input type="number" id="altura" name="altura" min="0">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Fatores que podem afetar a cicatrização</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="fator_moradia" name="fatores_cicatrizacao[]" value="moradia">
+                                <label for="fator_moradia">Moradia</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="fator_higiene" name="fatores_cicatrizacao[]" value="higiene">
+                                <label for="fator_higiene">Higiene</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="fator_social" name="fatores_cicatrizacao[]" value="social">
+                                <label for="fator_social">Social</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="fator_familiar" name="fatores_cicatrizacao[]" value="familiar">
+                                <label for="fator_familiar">Familiar</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="fator_psicologico" name="fatores_cicatrizacao[]" value="psicologico">
+                                <label for="fator_psicologico">Psicológico</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="fator_cuidador" name="fatores_cicatrizacao[]" value="cuidador">
+                                <label for="fator_cuidador">Cuidador</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Avaliação da Lesão -->
+                <div class="section">
+                    <h2 class="section-title">Avaliação da Lesão</h2>
+                    
+                    <div class="form-group">
+                        <label for="local_lesao">Local da lesão</label>
+                        <input type="text" id="local_lesao" name="local_lesao">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Dimensões da lesão (cm)</label>
+                        <div class="measurement-group">
+                            <div>
+                                <label for="lesao_altura">Altura</label>
+                                <input type="number" id="lesao_altura" name="lesao_altura" step="0.1" min="0">
+                            </div>
+                            <div>
+                                <label for="lesao_largura">Largura</label>
+                                <input type="number" id="lesao_largura" name="lesao_largura" step="0.1" min="0">
+                            </div>
+                            <div>
+                                <label for="lesao_profundidade">Profundidade</label>
+                                <input type="number" id="lesao_profundidade" name="lesao_profundidade" step="0.1" min="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="tipo_lesao">Tipo de lesão</label>
+                            <select id="tipo_lesao" name="tipo_lesao">
+                                <option value="">Selecione...</option>
+                                <option value="limpa">Limpa</option>
+                                <option value="contaminada">Contaminada</option>
+                                <option value="potencialmente_contaminada">Potencialmente contaminada</option>
+                                <option value="infectada">Infectada</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="dor">Dor</label>
+                            <select id="dor" name="dor">
+                                <option value="">Selecione...</option>
+                                <option value="local">Local</option>
+                                <option value="ocasional">Ocasional</option>
+                                <option value="produzida">Produzida</option>
+                                <option value="continua">Contínua</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Bordas</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="borda_integra" name="bordas[]" value="integra">
+                                <label for="borda_integra">Íntegra</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="borda_irregular" name="bordas[]" value="irregular">
+                                <label for="borda_irregular">Irregular</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="borda_macerada" name="bordas[]" value="macerada">
+                                <label for="borda_macerada">Maceradas</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="borda_epibole" name="bordas[]" value="epibole">
+                                <label for="borda_epibole">Epíbole</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="borda_plana" name="bordas[]" value="plana">
+                                <label for="borda_plana">Plana</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="borda_edema" name="bordas[]" value="edema">
+                                <label for="borda_edema">Edema</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="borda_hiperqueratose" name="bordas[]" value="hiperqueratose">
+                                <label for="borda_hiperqueratose">Hiperqueratose</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="borda_descolada" name="bordas[]" value="descolada">
+                                <label for="borda_descolada">Descolada</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="tempo_lesao">Tempo da lesão</label>
+                            <select id="tempo_lesao" name="tempo_lesao">
+                                <option value="">Selecione...</option>
+                                <option value="aguda">Aguda</option>
+                                <option value="cronica">Crônica</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="exsudato">Exsudato</label>
+                            <select id="exsudato" name="exsudato">
+                                <option value="">Selecione...</option>
+                                <option value="ausente">Ausente</option>
+                                <option value="pouco">Pouco</option>
+                                <option value="moderado">Moderado</option>
+                                <option value="abundante">Abundante</option>
+                                <option value="purulento">Purulento</option>
+                                <option value="odor_fetido">Odor fétido</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tecido</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="tecido_epitelial" name="tecido[]" value="epitelial">
+                                <label for="tecido_epitelial">Epitelial</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="tecido_granulacao" name="tecido[]" value="granulacao">
+                                <label for="tecido_granulacao">Granulação</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="tecido_esfacelo" name="tecido[]" value="esfacelo">
+                                <label for="tecido_esfacelo">Esfacelo</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="tecido_necrose_seca" name="tecido[]" value="necrose_seca">
+                                <label for="tecido_necrose_seca">Necrose seca</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="tecido_necrose_umida" name="tecido[]" value="necrose_umida">
+                                <label for="tecido_necrose_umida">Necrose úmida</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="tecido_osso" name="tecido[]" value="osso">
+                                <label for="tecido_osso">Osso</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="tecido_tendao" name="tecido[]" value="tendao">
+                                <label for="tecido_tendao">Tendão</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="tecido_musculo" name="tecido[]" value="musculo">
+                                <label for="tecido_musculo">Músculo</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Perilesão</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="perilesao_edema" name="perilesao[]" value="edema">
+                                <label for="perilesao_edema">Edema</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="perilesao_eritema" name="perilesao[]" value="eritema">
+                                <label for="perilesao_eritema">Eritema</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="perilesao_calor" name="perilesao[]" value="calor">
+                                <label for="perilesao_calor">Calor</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="perilesao_maceracao" name="perilesao[]" value="maceracao">
+                                <label for="perilesao_maceracao">Maceração</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="perilesao_ressecamento" name="perilesao[]" value="ressecamento">
+                                <label for="perilesao_ressecamento">Ressecamento</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="perilesao_escoriacao" name="perilesao[]" value="escoriacao">
+                                <label for="perilesao_escoriacao">Escoriação</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="data_avaliacao">Data da avaliação</label>
+                            <input type="date" id="data_avaliacao" name="data_avaliacao">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="observacoes">Observações</label>
+                        <textarea id="observacoes" name="observacoes" placeholder="Observações adicionais sobre a lesão..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Plano de Cuidados -->
+                <div class="section">
+                    <h2 class="section-title">Plano de Cuidados</h2>
+                    
+                    <div class="form-group">
+                        <label for="limpeza">Limpeza</label>
+                        <textarea id="limpeza" name="limpeza" placeholder="Protocolo de limpeza da lesão..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cobertura_indicada">Cobertura indicada</label>
+                        <textarea id="cobertura_indicada" name="cobertura_indicada" placeholder="Tipo de cobertura recomendada..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="desbridamento">Desbridamento</label>
+                        <textarea id="desbridamento" name="desbridamento" placeholder="Protocolo de desbridamento..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="frequencia_troca">Frequência de troca</label>
+                        <input type="text" id="frequencia_troca" name="frequencia_troca" placeholder="Ex: A cada 24h, 48h, conforme necessário...">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="medicacoes_cuidados">Medicações (cuidados)</label>
+                        <textarea id="medicacoes_cuidados" name="medicacoes_cuidados" placeholder="Medicações prescritas para o cuidado da lesão..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dieta">Dieta</label>
+                        <textarea id="dieta" name="dieta" placeholder="Orientações dietéticas..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="hidratacao">Hidratação</label>
+                        <textarea id="hidratacao" name="hidratacao" placeholder="Orientações sobre hidratação..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="controle_pa">Controle de PA</label>
+                        <textarea id="controle_pa" name="controle_pa" placeholder="Orientações para controle da pressão arterial..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="controle_glicemia">Controle de glicemia</label>
+                        <textarea id="controle_glicemia" name="controle_glicemia" placeholder="Orientações para controle glicêmico..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mudanca_decubito">Mudança de decúbito</label>
+                        <textarea id="mudanca_decubito" name="mudanca_decubito" placeholder="Protocolo de mudança de posição..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mobilidade_cuidados">Mobilidade (cuidados)</label>
+                        <textarea id="mobilidade_cuidados" name="mobilidade_cuidados" placeholder="Orientações sobre mobilidade e exercícios..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="exames_solicitados">Exames solicitados</label>
+                        <textarea id="exames_solicitados" name="exames_solicitados" placeholder="Exames complementares solicitados..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Controle de Sessões -->
+                <div class="section">
+                    <h2 class="section-title">Controle de Sessões</h2>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="sessao_data">Data da sessão</label>
+                            <input type="date" id="sessao_data" name="sessao_data">
+                        </div>
+                        <div class="form-group">
+                            <label for="sessao_cliente">Cliente/Paciente</label>
+                            <input type="text" id="sessao_cliente" name="sessao_cliente">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sessao_procedimento">Procedimento realizado</label>
+                        <textarea id="sessao_procedimento" name="sessao_procedimento" placeholder="Descreva o procedimento realizado na sessão..."></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">Enviar Ficha Clínica</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('fichaClinica').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Aqui você pode adicionar a lógica para enviar os dados
+            // Por exemplo, para um servidor ou API
+            
+            alert('Ficha clínica enviada com sucesso!\n\nEste é um template de demonstração. Para implementar o envio real dos dados, configure o action do formulário para apontar para seu servidor ou API.');
+            
+            // Exemplo de como coletar os dados do formulário:
+            const formData = new FormData(this);
+            const data = {};
+            
+            for (let [key, value] of formData.entries()) {
+                if (data[key]) {
+                    if (Array.isArray(data[key])) {
+                        data[key].push(value);
+                    } else {
+                        data[key] = [data[key], value];
+                    }
+                } else {
+                    data[key] = value;
+                }
+            }
+            
+            console.log('Dados do formulário:', data);
+        });
+
+        // Adicionar validação em tempo real
+        const requiredFields = document.querySelectorAll('input[required], select[required]');
+        requiredFields.forEach(field => {
+            field.addEventListener('blur', function() {
+                if (!this.value.trim()) {
+                    this.style.borderColor = '#e74c3c';
+                } else {
+                    this.style.borderColor = '#27ae60';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
