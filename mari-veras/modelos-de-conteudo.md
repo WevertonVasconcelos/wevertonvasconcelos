@@ -6,41 +6,52 @@ Modelos para preencher. Cada um traz um exemplo na voz da Mariana. Os exemplos s
 
 ## 1. Roteiro de reels (30–60 s)
 
+Ajustado ao jeito real dela (`estilo-em-video.md`): ela fala ~170 palavras por minuto, improvisa bem a partir de tópicos e usa muito as mãos. **30 s ≈ 85 palavras · 45 s ≈ 125 · 60 s ≈ 170.** Para paciente, no máximo 130 palavras.
+
 ```
 TÍTULO INTERNO:
 PÚBLICO: paciente/família | profissional
+FORMATO: educativo | mito ou verdade | caso clínico | bastidor | pergunta-dor | relato
 OBJETIVO: educar | gerar confiança | levar ao atendimento | levar ao curso/consultoria
-DURAÇÃO: __ s     CENA: (onde gravar, sozinha, com celular)
+DURAÇÃO: __ s (≈ __ palavras)
+CENA: Clinical Center | mesa com simuladores e laser | carro/caminho | casa
+PLANO: médio (cintura para cima), câmera na altura dos olhos, lapela
 
-[0–3 s] GANCHO
+[0–3 s] GANCHO (fala LITERAL, já olhando para a câmera, sem "oi, gente")
   Fala:
-  Texto na tela:
+  Palavra-chave na tela (faixa terracota):
 
-[3–__ s] DESENVOLVIMENTO (2 ou 3 pontos, uma frase cada)
+[3–__ s] MEIO (3 a 5 TÓPICOS, não texto corrido; ela improvisa)
+  • 
+  • 
+  • (uma comparação caseira: "imagina só…")
+  Gesto natural, se ajudar: (indicador) na regra · (pinça) no detalhe
+
+[__ s] VIRADA (fala LITERAL, frase curta e afirmativa) + meio segundo de pausa
   Fala:
-  Texto na tela:
 
-[__ s] VIRADA (a frase que fica)
-  Fala:
+[últimos 5 s] CHAMADA (sorriso, mãos abertas)
+  Fala: "Se ______, clica no link da bio. Agenda uma consulta comigo e a gente conversa sobre o seu caso com calma."
 
-[últimos 3–5 s] CHAMADA PARA AÇÃO
-  Fala:
-  Texto na tela:
-
-CAPA (até 6 palavras):
-LEGENDA: (ver modelo 3)
+EDIÇÃO: legenda palavra a palavra (padrão em identidade-visual.md › Em vídeo); cortar pausas sem acelerar acima de 1,1×
+CAPA (até 6 palavras, serifa):
+LEGENDA DO POST: (ver modelo 3)
 REVISAR ANTES DE POSTAR:
 ```
 
-**Exemplo (paciente/família):**
+**Exemplo (paciente/família, ~45 s, ~115 palavras):**
 
-- **Gancho:** "Seu pé tem um machucado que não fecha há mais de duas semanas? Presta atenção."
-- **Texto na tela:** FERIDA QUE NÃO FECHA EM 2 SEMANAS
-- **Desenvolvimento:** "Em quem tem diabetes, a cicatrização é mais lenta e a pessoa pode nem sentir dor. Por isso a ferida piora em silêncio. Quanto antes ela for avaliada, mais simples o tratamento costuma ser."
-- **Virada:** "Amputação nunca acontece do nada. Ela começa num machucado que alguém achou que ia passar."
-- **Chamada:** "Se é o seu caso, ou de alguém da sua família, me chama no WhatsApp pra uma avaliação."
-- **Capa:** Ferida que não fecha?
-- **Revisar antes de postar:** "duas semanas" como referência de tempo.
+- **Gancho (literal):** "Você sabia que um machucado que não dói pode ser o mais perigoso no pé de quem tem diabetes?"
+- **Palavra na tela:** NÃO DÓI
+- **Tópicos:**
+  - Diabetes descontrolada tira a sensibilidade: a pessoa não sente o machucado.
+  - Por isso a ferida piora em silêncio, sem ninguém perceber.
+  - Imagina só: um calinho que ninguém olhou vira uma lesão aberta em poucos dias. (indicador)
+  - O que fazer: olhar o pé todo dia; calo não se corta em casa.
+- **Virada (literal):** "Amputação nunca acontece do nada. Ela começa num machucado que alguém achou que ia passar."
+- **Chamada:** "Se tem alguém assim na sua família, clica no link da bio. Agenda uma consulta comigo e a gente conversa sobre o caso com calma."
+- **Capa:** O machucado que não dói
+- **Revisar antes de postar:** afirmação clínica sobre perda de sensibilidade e tempo de evolução.
 
 ---
 
@@ -123,7 +134,7 @@ DURAÇÃO ALVO: 6–12 min
 4. Erros comuns (1–2 min)
 5. Fechamento (30 s): resumo em 3 frases + tarefa
 MATERIAL DE APOIO: slide, checklist, PDF
-GRAVAÇÃO: em casa, luz de janela de frente, celular na horizontal (16:9), microfone de lapela
+GRAVAÇÃO: em casa, de dia, luz de janela de frente; celular na horizontal (16:9) em 1080p ou 4K, na altura dos olhos, plano médio; nada entre ela e a câmera (sem notebook na frente); fundo claro com 2–3 objetos da marca; microfone de lapela; gravar em trechos de 1–2 min. Checklist completo em `estilo-em-video.md`, seção 14.
 ```
 
 ---

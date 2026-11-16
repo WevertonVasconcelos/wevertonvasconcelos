@@ -57,6 +57,21 @@ No Canva, alternativas próximas: **Libre Baskerville** ou **Playfair Display** 
 | Carrossel / post | 4:5 (1080×1350) |
 | Reels / Stories / capa de reels | 9:16 (1080×1920); área segura central de 1080×1350 para a capa aparecer bem no grid |
 
+## Em vídeo (padrão observado nos reels, nov/2026)
+
+Detalhes e exemplos com tempo em `estilo-em-video.md`, seção 9.
+
+- **Formato:** 9:16 para reels; 16:9 para aulas.
+- **Enquadramento:** plano médio (cintura para cima, para caber as mãos), câmera na altura dos olhos, fundo claro e desfocado. Bastidores em plano americano andando, detalhes de mãos e insumos.
+- **Legenda padrão (reels de paciente):** palavra a palavra, 2 a 4 palavras por vez, sans-serif bold arredondada (Montserrat SemiBold/Bold; Arial Bold no ffmpeg), **branca com sombra/contorno marrom-escuro `#4A3A30`**, centralizada a **~58% da altura** (acima dos botões do Instagram), minúsculas.
+- **Palavra-chave:** 1 por frase, maior, branca sobre **faixa terracota `#C8652A`** (cor medida a olho no reels "Amputação"; conferir no projeto do editor).
+- **Cartela de virada:** tela cheia creme `#F7F4F0` com texto marrom `#4A3A30` (ou o inverso).
+- **Fala de paciente / citação:** serifa itálica (Georgia Italic, Playfair Italic).
+- **Perguntas ("Mito ou verdade"):** balão branco no estilo da figurinha de perguntas do Instagram.
+- **Capa:** serifa elegante de alto contraste (Playfair Display / Didot / Georgia), branca ou creme, até 6 palavras, com subtítulo menor em pêssego `#F6DCC8` ou terracota. Rosto dela no terço superior; título no centro (área segura 1080×1350).
+- **Figurino que conversa com a paleta:** creme, off-white, mostarda, oliva, branco, acessórios dourados. Evitar preto e azul forte.
+- **Observação:** os vídeos e carrosséis já publicados usam **terracota/laranja queimado** como cor de destaque, mais quente que o caramelo `#9A7559` do manual. Se a identidade própria da Mari Véras for definida, decidir entre os dois.
+
 ## Logotipo e assinatura
 
 - Véras Vasconcelos: monograma "VV" caligráfico (dourado + preto) com "VÉRAS VASCONCELOS · MEDICINA E SAÚDE".

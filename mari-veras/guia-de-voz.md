@@ -1,6 +1,6 @@
 # Guia de voz e estilo: Mari Véras
 
-Montado a partir do manual "Além do Curativo", do documento do projeto (nov/2026) e dos títulos dos conteúdos do Instagram. Itens marcados **[INFERIDO]** foram deduzidos e precisam da validação da Mariana. Quando as transcrições dos vídeos chegarem, este guia será atualizado com o jeito de falar dela.
+Montado a partir do manual "Além do Curativo", do documento do projeto (nov/2026) e dos títulos dos conteúdos do Instagram. Em nov/2026 foi acrescentada a seção **"Como ela fala de verdade"**, tirada das transcrições dos vídeos (`transcricoes/`), e os itens antes marcados [INFERIDO] foram revistos com base nesses vídeos. Detalhes visuais e de edição: `estilo-em-video.md`.
 
 ## Personalidade da marca
 
@@ -70,6 +70,42 @@ Use um por peça, no máximo. Repetição demais cansa.
 - **Bastidor e afeto:** "Tem dias em que o consultório vai comigo.", "No domicílio agora", "O compromisso com cada pessoa que confia no meu trabalho."
 - **Ressalva honesta:** "A laserterapia pode ser uma grande aliada, mas nem sempre é indicada para todos os casos."
 
+## Como ela fala de verdade (das transcrições, nov/2026)
+
+Tirado de 13 vídeos (reels, brutos e o vídeo do curso). Arquivos e tempos em `estilo-em-video.md`, seção 4.
+
+**Como ela abre**
+- Já entra no assunto, sem "oi, gente": "Você sabia que…", "A amputação nunca acontece do nada.", "Essa mala é praticamente um pedacinho do meu consultório viajando comigo."
+- Em relato pessoal: "Ah, hoje foi um dia daqueles…"
+- No curso: "Eu vou me apresentar, né? Eu sou Mari Véras."
+
+**Como ela fecha** (reels para pacientes, sempre igual na estrutura)
+- "Se [situação], clica no link da bio. Agenda uma consulta comigo e a gente conversa sobre o seu caso **com calma**."
+- Variações reais: "…e me conta o que está acontecendo.", "…e me manda uma mensagem. Vamos cuidar dessa ferida com o acompanhamento que ela precisa.", "Manda isso pra quem você sabe que precisa ouvir.", "Esse perfil é pra você. Fica por aqui."
+
+**Expressões que se repetem**
+- **"com calma"** (a marca dela nas chamadas), **"a gente"**, **"né?"**, **"sabe?"**, **"direitinho"**, diminutivos de explicação ("fechadinho", "calinho", "cutucadinha").
+- **"Imagina só…"**, **"Olha…"**, **"Então…"**.
+- Indignação bem-humorada: **"Pelo amor de Deus, gente, nunca façam isso."**, **"meu Deus do céu"**.
+- Religiosidade natural: "se Deus quiser", "vai com Deus".
+- Palavras de valor: "acompanhamento especializado", "protocolo certo", "olhar clínico", "avaliação especializada", "cada detalhe faz diferença", "eu levo isso a sério".
+
+**Frases dela que já são gancho ou virada**
+- "A amputação nunca acontece do nada."
+- "Não é. Ferida crônica tem solução."
+- "Não existe protocolo fixo. Existe protocolo adequado para aquela ferida, naquele dia."
+- "A ferida não tira só sua pele. Ela tira a autonomia."
+- "O problema quase nunca está no cuidado de casa. Existe sempre um motivo clínico."
+- "Muda o lugar, mas não muda a forma de cuidar." (legenda do post da mala)
+- "Calo em quem tem diabetes não se mexe em casa, não se corta com alicate, não se deixa para depois."
+- Para profissionais: "A borda comunica o erro." / "Olhar ao redor, perceber os detalhes."
+
+**Como ela explica:** comparação caseira ("ferida aberta é como carne na geladeira sem tampa: resseca"), caso de um paciente real contado em 3 frases, e uma regra em três "não".
+
+**Na edição:** manter "né?", "sabe?", "a gente" e os diminutivos; cortar repetições, "tem que estar fazendo" e arranques ("E aí…", "Assim…").
+
+**Diferença entre escrita e fala:** os bordões do manual ("O resultado sempre vem!", "Protagonistas não desistem!") **não aparecem na fala** dos vídeos. Na fala, o fecho natural dela é "com calma" e "a gente conversa". Use os bordões do manual no texto escrito e em material para profissionais; nos roteiros para pacientes, use o jeito falado.
+
 ## O que agrada e o que desagrada
 
 **Agrada**
@@ -80,9 +116,9 @@ Use um por peça, no máximo. Repetição demais cansa.
 
 **Desagrada**
 - Documento pesado ou estruturado demais.
-- **[INFERIDO]** Jargão corporativo ou de marketing ("alavancar", "funil", "lead", "engajamento orgânico").
-- **[INFERIDO]** Tom de guru, promessa de enriquecimento rápido, caixa-alta gritando.
-- **[INFERIDO]** Emoji em excesso. Use 0 a 2 por legenda, com função.
+- Jargão corporativo ou de marketing ("alavancar", "funil", "lead", "engajamento orgânico"). **[CONFIRMADO pelos vídeos]**: em ~20 min de fala transcrita ela não usa nenhum termo assim; fala "acompanhamento", "cuidado", "consulta", "com calma".
+- Tom de guru, promessa de enriquecimento rápido, caixa-alta gritando. **[CONFIRMADO pelos vídeos]**: mesmo no curso para profissionais o tom é de conversa ("eu decidi empreender, né?", "te mostrar que é possível"), sem promessa de faturamento. Nos reels, o destaque é em palavra-chave colorida, não em frase inteira em caixa-alta.
+- Emoji em excesso. Use 0 a 2 por legenda, com função. **[CONFIRMADO pelas legendas dos posts]**: ela usa 1 emoji por publicação, quase sempre coração marrom 🤎 ou laranja 🧡 no fim de um parágrafo, às vezes 📲 antes da chamada.
 - Qualquer coisa que exponha paciente ou soe sensacionalista.
 
 ## Palavras e expressões

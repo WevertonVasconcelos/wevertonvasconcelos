@@ -46,15 +46,23 @@ def main(paths: list[str]) -> None:
         (dest / "info.txt").write_text(json.dumps(info, ensure_ascii=False, indent=2), encoding="utf-8")
         print(f"→ {video.name}: {info}", flush=True)
 
+        # drawtext só existe se o ffmpeg foi compilado com freetype (o do Homebrew pode vir sem)
+        tem_drawtext = "drawtext" in subprocess.run(
+            ["ffmpeg", "-v", "error", "-filters"], capture_output=True, text=True).stdout
+        carimbo = (",drawtext=text='%{pts\\:hms}':x=6:y=6:fontsize=18:fontcolor=white:"
+                   "box=1:boxcolor=black@0.5") if tem_drawtext else ""
+        if not tem_drawtext:
+            with open(dest / "info.txt", "a", encoding="utf-8") as f:
+                f.write(f"\nSem drawtext: no painel N, o quadro i (0-11, da esquerda para a "
+                        f"direita, de cima para baixo) está em ((N-1)*12 + i) * {passo} s.\n")
         subprocess.run(
             ["ffmpeg", "-v", "error", "-y", "-i", str(video), "-vf",
-             f"fps=1/{passo},scale=360:-2,drawtext=text='%{{pts\\:hms}}':x=6:y=6:"
-             "fontsize=18:fontcolor=white:box=1:boxcolor=black@0.5,tile=4x3",
+             f"fps=1/{passo},scale=360:-2{carimbo},tile=4x3",
              "-q:v", "4", str(dest / "painel_%03d.jpg")], check=True)
 
         log = subprocess.run(
             ["ffmpeg", "-v", "info", "-y", "-i", str(video), "-vf",
-             "select='gt(scene,0.35)',showinfo,scale=480:-2", "-vsync", "vfr",
+             "select='gt(scene,0.35)',showinfo,scale=480:-2", "-fps_mode", "vfr",
              "-q:v", "4", str(dest / "corte_%03d.jpg")],
             capture_output=True, text=True).stderr
         tempos = re.findall(r"pts_time:([\d.]+)", log)

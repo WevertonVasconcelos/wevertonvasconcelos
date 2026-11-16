@@ -9,7 +9,7 @@ Fonte: prints da pasta MARI VÉRAS no Google Drive (IMG_5329, 5330, 5331, 5339).
 - **Bio:** "Sua ferida não cicatriza? Existe tratamento. Curativos especializados e laserterapia. Enf. Mari Véras | Dr. Weverton Vasconcelos. Agendamentos"
 - **Link:** linktr.ee/verasvasconcelos
 - **Botões:** Mensagem, WhatsApp
-- **@ do perfil:** **[A CONFIRMAR]**. Segundo o Weverton, a Mariana migrou do @veras_vasconcelos para este perfil novo; o @ não aparece nos prints.
+- **@ do perfil:** **@mariveras.enf** (verificado, selo azul), confirmado nas gravações de tela de 15/11/2026. Migrou do @veras_vasconcelos.
 
 ## Conteúdos visíveis no grid (títulos)
 
@@ -37,6 +37,22 @@ Fonte: prints da pasta MARI VÉRAS no Google Drive (IMG_5329, 5330, 5331, 5339).
 
 Valores lidos: 5.125 · 1.837 · 1.235 · 900 · 801 · 709 · 665 · 626 · 515.
 O OCR não permite ligar cada número ao vídeo com segurança. **[A CONFIRMAR]** quais reels tiveram 5,1 mil e 1,8 mil visualizações: isso mostra que tipo de conteúdo puxa alcance.
+
+### Reels ligados às gravações de tela (15/11/2026)
+
+| Título no grid | Data | Curtidas · coment. · repost. · envios · salvos (visíveis) | Transcrição |
+| --- | --- | --- | --- |
+| Amputação nunca acontece do nada | — | 73 · 8 · 16 · 5 | `transcricoes/reels-amputacao-nunca-acontece-do-nada.txt` |
+| Mito ou verdade: o que colocam na ferida? | — | 51 · 3 · 9 · 4 | `transcricoes/reels-mito-ou-verdade-o-que-colocam-na-ferida.txt` |
+| Você me escolheu para tratar sua ferida… | 02/10 | — · 5 · 6 · 7 · 5 | `transcricoes/reels-caso-voce-me-escolheu.txt` |
+| Como chegar no meu local de atendimento | 28/09 | — · 1 · 9 · 5 · 2 | `transcricoes/reels-como-chegar-local-atendimento.txt` |
+| O compromisso com cada pessoa… | 10/06 | — · 6 · 9 · 6 · 1 | `transcricoes/reels-compromisso-com-cada-pessoa.txt` |
+| Tem dias em que o consultório vai comigo | 06/10 | — · 3 · 6 · 4 · 1 | `transcricoes/reels-consultorio-vai-comigo.txt` |
+| Você faz de tudo… a ferida parece não melhorar? | 09/10 | — · — · 7 · 5 · 3 | `transcricoes/reels-ferida-parece-nao-melhorar.txt` |
+| A laserterapia pode ser uma grande aliada… | 14/10 | — · — · 1 · 1 | `transcricoes/reels-laserterapia-nem-sempre-indicada.txt` |
+| No domicílio agora / A lesão era extensa… | 20/10 | — · 4 · 2–3 · 2 · 1 | `transcricoes/reels-no-domicilio-agora.txt` |
+
+**Visualizações por reels: [A CONFIRMAR].** Hipótese: "Amputação nunca acontece do nada" é o de 5,1 mil (maior engajamento visível e mais compartilhado). Fora do grid de reels, o post com mais interação é o carrossel pessoal "Um ano de Lara" (153 curtidas, 25 comentários).
 
 ## Leituras iniciais (hipóteses para testar)
 
