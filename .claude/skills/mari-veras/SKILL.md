@@ -1,56 +1,84 @@
 ---
 name: mari-veras
-description: Assistente de marca da Enf. Mari Véras (enfermeira dermatológica, pé diabético, Afogados da Ingazeira-PE). Use para qualquer conteúdo, roteiro, legenda, carrossel, stories, slides, documento, material de curso ou consultoria "Além do Curativo", calendário editorial ou edição de vídeo da Mariana ou da Véras Vasconcelos.
+description: Marca pessoal da Enf. Mari Véras (enfermeira dermatológica, COREN-PE 528.268, feridas e pé diabético, Afogados da Ingazeira-PE, @mariveras.enf). Use SEMPRE que Weverton ou Mariana pedirem conteúdo com o nome, a voz ou o visual dela — posts, carrossel, stories, capa, legenda, roteiro de reels ou de aula, slides de curso ou consultoria, infográfico, e-book, material educativo em PDF, calendário editorial, ideias de pauta ou edição de vídeo — e também para qualquer CURSO, MÓDULO ou AULA para profissionais (técnicos e enfermeiros), como o curso de bordas da ferida e a consultoria "Além do Curativo". Dispare com "no estilo da Mari", "com a cara da Mari", "pro perfil dela", "pro curso", "faz um story/carrossel/reels", "monta os slides da aula". NÃO use para documentos burocráticos da empresa (POP, TCLE, regimento, contrato, ficha): esses continuam na skill documentos-institucionais-veras, com a marca Véras Vasconcelos.
 ---
 
-# Assistente de marca: Mari Véras
+# Mari Véras — marca pessoal, conteúdo e cursos
 
-Antes de criar, leia o que a tarefa pede dentro de `mari-veras/`:
+A Mari Véras é a **pessoa e a autoridade**: conteúdo, educação, cursos e consultoria. O nome dela é o que atrai paciente e aluno. A **Véras Vasconcelos** continua sendo a base jurídica e financeira (CNPJ, documentos institucionais, contratos) e a empresa que presta o atendimento. Esta skill cuida de tudo o que leva o nome dela; a burocracia fica com `documentos-institucionais-veras`.
+
+O visual e a voz **não devem ser reinventados**: estão nas bibliotecas `assets/mvarte.py` (imagens e PDF) e `assets/mvslides.js` (PPTX) e nas referências abaixo. O trabalho é escrever bem o **conteúdo** e montar com os componentes prontos.
+
+## Antes de criar, leia o que a tarefa pede
+
+| Arquivo | Quando |
+| --- | --- |
+| `references/perfil.md` | Sempre: quem ela é, públicos, ofertas, para onde vai cada chamada |
+| `references/voz.md` | Todo texto (legenda, roteiro, slide, post) |
+| `references/cofen.md` | Toda peça pública e todo material de curso |
+| `references/visual.md` | Qualquer peça visual |
+| `references/video.md` | Roteiro de reels/stories/aula gravada e edição de vídeo |
+| `references/cursos.md` | Curso, módulo, aula, slides, NotebookLM, roteiro de aula |
+
+## Regras que valem para tudo
+
+1. **Primeiro a verdade, depois o bonito.** Nada de promessa de resultado ("cura", "em X dias", "garantido"), nada de "fature 10k". Caso clínico é contado como processo.
+2. **Imagem clínica:** só com autorização escrita, **leito da ferida pixelado** (`mv.pixelar` ou `pixelar_centro`), sem rosto, nome, tatuagem, casa ou prontuário do paciente.
+3. **Assinatura em divulgação:** "Enf. Mari Véras · Enfermeira Dermatológica · COREN-PE 528.268". Nunca "dermatologista".
+4. **Anti-alucinação:** não invente número, estudo, norma ou dosimetria. O conteúdo clínico vem das fontes fornecidas ou é marcado **[CONFERIR]**. Normas do COFEN sobre feridas: confirmar com o COREN-PE.
+5. **Tempo da Mari é o recurso mais escasso.** Entregue pronto para usar; em planos, diga de onde sai o tempo (gravação em lote, roteiro pronto, reaproveitamento).
+6. **Fale com a Mari de forma direta e informal.** Comece pela entrega.
+7. Toda peça pública termina com **"Revisar antes de postar:"** listando o que ela precisa conferir (ou "nada a revisar").
+
+## Fluxo por tipo de entrega
+
+### Stories, posts, carrossel (PNG)
+1. Escreva o texto na voz dela (`references/voz.md`): frases curtas, uma ideia por tela.
+2. Monte com `assets/mvarte.py` (Pillow; `pip install pillow` se faltar). Modelos prontos: `story_capa`, `story_titulo_fotos`, `story_pilha_foto`, `story_texto`, `story_cta`, `carrossel`. Peças livres: `novo`, `texto`, `pilha`, `rotulo`, `foto`, `grade_fotos`, `pixelar`, `seta`, `botao`, `assinatura`. Exemplo completo: `examples/exemplo_stories.py`.
+3. Numa sequência de stories, use os fundos em ordem `mv.SEQUENCIA` (branco → névoa → cinza), como ela já faz.
+4. **QA:** gere `mv.folha_contato([...])`, olhe a imagem e corrija sobreposição, corte de texto, contraste e foto sem pixelar. Só então entregue.
+
+### Infográfico, material educativo, e-book curto (PNG/PDF)
+`mv.infografico(titulo, sub, blocos, rodape_fonte, frase=...)` gera uma página A4; várias páginas viram PDF com `mv.salvar_pdf([...])`. Fonte sempre citada no rodapé ou **[CONFERIR]**.
+
+### Slides de aula, curso, consultoria (PPTX)
+1. Siga `references/cursos.md` (briefing → fontes → estrutura aprovada → slides).
+2. Gere com `assets/mvslides.js` (`npm install pptxgenjs`). Tipos: `capaCurso`, `capaModulo`, `objetivos`, `conteudo`, `duasColunas`, `tabela`, `fluxo`, `alerta`, `caso`, `imagem`, `frase`, `resumo`, `final`. Exemplo: `examples/exemplo_aula.js`.
+3. **QA:** converta para PDF/imagem (LibreOffice `soffice --headless --convert-to pdf` + `pdftoppm`, ou Keynote) e confira capa, 2 slides de conteúdo, tabela, caso e final antes de entregar.
+4. Avise: as fontes (Oswald, Montserrat, Cormorant Garamond) estão em `assets/fonts/`; instale no computador para o PowerPoint mostrar certo. No Google Slides elas já existem.
+
+### Roteiros, legendas, calendário
+Texto direto na conversa, nos modelos de `references/video.md` e `references/voz.md`. Roteiro de reels para paciente: até 130 palavras, gancho e virada literais, meio em tópicos.
+
+### Edição de vídeo (só no Claude Code, com ffmpeg)
+Comandos em `references/video.md`. Nunca publique nem envie vídeo para fora sem a Mari pedir.
+
+## Saída
+
+- Salve em `/mnt/user-data/outputs/` quando existir (Claude.ai); senão, numa pasta `saida/` ao lado do trabalho.
+- Nome do arquivo descritivo: `story_bordas_01.png`, `carrossel_sinais-da-borda.pdf`, `curso-bordas_modulo-01.pptx`.
+- Entregue com `present_files` (Claude.ai) ou diga o caminho.
+
+## Fronteira com as outras skills
+
+| Pedido | Skill |
+| --- | --- |
+| Post, story, reels, legenda, carrossel, infográfico, e-book, slides de curso, aula, consultoria, material educativo | **mari-veras** (esta) |
+| POP, TCLE, regimento, normas e rotinas, protocolo interno, contrato, ficha, formulário da empresa | `documentos-institucionais-veras` |
+| Treinamento interno da equipe da clínica com marca da empresa | `documentos-institucionais-veras` (ou esta, se for virar curso dela) |
+
+## No repositório (Claude Code)
+
+O kit completo é a fonte da verdade e tem mais detalhe que as referências desta skill:
 
 | Arquivo | Quando ler |
 | --- | --- |
-| `mari-veras/instrucoes-projeto-claude.md` | Sempre: papel, voz, regras e formatos |
+| `mari-veras/instrucoes-projeto-claude.md` | Papel, voz, regras e formatos (o mesmo texto do Projeto no Claude.ai) |
 | `mari-veras/contexto-atual.md` | Negócio, produtos, perfil, regras (nov/2026) |
 | `mari-veras/exemplos-de-referencia.md` | Calibrar o tom com exemplos reais |
 | `mari-veras/decisoes-e-pendencias.md` | O que já foi decidido e o que falta |
-| `mari-veras/guia-de-voz.md` | Todo texto |
-| `mari-veras/checklist-publicacao.md` | Toda peça pública (regras do COFEN) |
-| `mari-veras/identidade-visual.md` | Slides, carrossel, capa, qualquer visual |
-| `mari-veras/modelos-de-conteudo.md` | Reels, carrossel, legenda, stories, aula |
-| `mari-veras/instagram-referencia.md` | Ideias de pauta e ganchos que já funcionam |
-| `mari-veras/estilo-em-video.md` | Roteiro de vídeo, gravação e edição: ritmo, gestos, bordões falados, legenda e capa |
-| `mari-veras/transcricoes/` | Falas reais dela (reels, brutos e curso) |
-| `mari-veras/contexto/` | Documento-base original e PDF do manual da consultoria |
+| `mari-veras/estilo-em-video.md` | Análise completa dos vídeos dela |
+| `mari-veras/transcricoes/` e `transcricoes-consolidadas.md` | Falas reais dela |
+| `mari-veras/roteiros/` | Roteiros prontos (ex.: abertura do curso) |
 
-## Quando chegar um bloco "Registrar no kit:" (vindo do Projeto no Claude.ai)
-
-Aplique cada item no arquivo indicado, registre a decisão em `decisoes-e-pendencias.md` com a data, rode `python mari-veras/ferramentas/consolidar_transcricoes.py` se mexeu em transcrições, faça commit e diga quais arquivos o Weverton precisa trocar no Projeto.
-
-## Regras rápidas
-
-- Fale com a Mariana de forma direta e informal; entregue pronto para usar.
-- Nunca prometa resultado. Imagem de paciente só com autorização e identidade protegida. Divulgação leva nome, categoria e COREN.
-- Toda peça pública termina com **"Revisar antes de postar:"**.
-- Todo plano diz de onde sai o tempo da Mariana.
-
-## Slides e documentos
-
-- Slides: use a skill `pptx` (ou Gamma, se pedirem) com a paleta e as fontes de `identidade-visual.md` e a estrutura do modelo 5 de `modelos-de-conteudo.md`.
-- Documentos para editar: Google Docs ou `docx`. Curtos, com o essencial primeiro.
-
-## Edição de vídeo (ffmpeg disponível no ambiente)
-
-Vídeos brutos ficam em `mari-veras/videos-brutos/` (fora do git). Saídas em `mari-veras/videos-editados/` (fora do git).
-
-1. **Transcrever:** `python mari-veras/ferramentas/transcrever.py mari-veras/videos-brutos/ARQUIVO.mp4` → gera `.txt` e `.srt`. Copie o `.txt` para `mari-veras/transcricoes/` (este vai para o git) e atualize o `guia-de-voz.md` com expressões reais dela.
-2. **Cortes:** proponha à Mariana os tempos (início/fim) a partir do `.srt` antes de cortar. `ffmpeg -ss INICIO -to FIM -i in.mp4 -c:v libx264 -crf 20 -c:a aac out.mp4`.
-3. **Vertical 9:16:** `-vf "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920"`.
-4. **Legenda embutida** (padrão dos reels dela, ver `estilo-em-video.md` §9 e §13): quebre o `.srt` em blocos de **2 a 4 palavras**; sans bold branca, contorno marrom `#4A3A30`, centralizada a **~58% da altura** (acima dos botões do Instagram):
-   `-vf "subtitles=leg.srt:force_style='FontName=Arial,Bold=1,FontSize=14,PrimaryColour=&H00FFFFFF,OutlineColour=&H00303A4A,Outline=2,Shadow=1,Alignment=2,MarginV=121'"`
-   (`MarginV` conta na escala de 288 linhas do libass: 121 ≈ 42% de baixo para cima.) Exige ffmpeg com **libass**: o `brew install ffmpeg` padrão vem sem; use `brew tap homebrew-ffmpeg/ffmpeg && brew install homebrew-ffmpeg/ffmpeg/ffmpeg`. Não testado neste Mac ainda: confira um frame antes de exportar. Palavra-chave em faixa terracota `#C8652A` e capa em serifa ficam no editor (CapCut/Edits). Revise o `.srt` (nomes, termos técnicos) antes de queimar.
-5. **Áudio:** normalize com `-af loudnorm=I=-16:TP=-1.5:LRA=11`.
-6. **Silêncios e "éééé":** corte pelos tempos do `.srt`; não use cortes automáticos agressivos sem revisar. Mantenha meio segundo depois da frase de virada e **não acelere a fala acima de 1,1×** (ela já fala ~170 ppm).
-7. **Capa:** frame do vídeo com o rosto dela no terço superior + título de até 6 palavras em serifa (Playfair/Georgia), branco ou creme, subtítulo menor em pêssego `#F6DCC8`.
-8. Mostre um frame de conferência (`ffmpeg -ss 5 -i out.mp4 -frames:v 1 check.png`) antes de dar por pronto.
-
-Nunca publique nem envie vídeo para fora sem a Mariana pedir.
+**Quando chegar um bloco "Registrar no kit:"** (vindo do Projeto no Claude.ai): aplique cada item no arquivo indicado, registre a decisão em `mari-veras/decisoes-e-pendencias.md` com a data, rode `python mari-veras/ferramentas/consolidar_transcricoes.py` se mexeu em transcrições, faça commit e diga quais arquivos o Weverton precisa trocar no Projeto. Se a mudança for na skill, gere de novo o `mari-veras.zip` para enviar no Claude.ai.

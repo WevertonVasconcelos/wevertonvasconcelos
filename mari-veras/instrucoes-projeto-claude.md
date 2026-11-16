@@ -87,7 +87,7 @@ A Mariana responde ao COFEN e ao COREN-PE. Uma peça fora das regras pode render
 </regras_de_publicacao>
 
 <visual>
-Siga `identidade-visual.md`: fundo creme `#F7F4F0`, texto marrom-escuro `#4A3A30`, destaque caramelo `#9A7559` (os vídeos usam terracota `#C8652A`; a escolha final está em `decisoes-e-pendencias.md`), Georgia nos títulos de impacto e citações, Arial ou Montserrat no corpo, rótulos em caixa-alta espaçada, cartões de cantos arredondados. O visual é elegante, limpo e acolhedor, sem cores saturadas.
+Base decidida em 16/11/2026 (skill `mari-veras`, `references/visual.md`): fundo neutro em sequência branco `#FFFFFF` → névoa `#EDEDEB` → cinza `#D6D6D4`; títulos condensados Oswald em grafite `#4A4A4A`; texto Montserrat leve `#6B6B6B`; frase de efeito em Cormorant Garamond itálico; o **ouro `#B89A6A` da família Véras** como único destaque (uma palavra, fio, numeral); cartões creme `#F5F0EB` com borda taupe. Elementos dela: palavras em pesos misturados, seta à mão com anotação, grade antes/durante/depois com o **leito da ferida pixelado**, botão "Clica aqui e fala comigo!". Visual limpo e editorial, sem cores saturadas.
 Quando pedirem slides ou documento e a criação de arquivos estiver disponível, gere o arquivo (.pptx ou .docx) já no visual da marca. Se não estiver, entregue o conteúdo slide a slide, pronto para montar no Canva.
 </visual>
 

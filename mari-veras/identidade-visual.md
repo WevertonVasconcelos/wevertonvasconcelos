@@ -1,5 +1,7 @@
 # Identidade visual: Mari Véras
 
+> **Atualização (16/11/2026):** a base visual da marca passou a ser a dos stories de 13/11/2026 (fundo branco/névoa/cinza, título condensado Oswald grafite, texto Montserrat leve, frase de efeito em Cormorant itálico) com o **ouro `#B89A6A` da família Véras** como único destaque. A versão em uso está na skill: `.claude/skills/mari-veras/references/visual.md`, com moldes prontos em `assets/`. O que segue abaixo (creme/caramelo do manual, terracota dos reels) fica como histórico e referência.
+
 Base **provisória**, extraída do manual "Além do Curativo" (as cores foram medidas no PDF). A identidade visual própria da Mari Véras ainda está em aberto no projeto; até lá, use esta.
 
 ## Paleta

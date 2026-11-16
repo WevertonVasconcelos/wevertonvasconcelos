@@ -14,6 +14,9 @@ Formato das decisões: data · decisão · quem decidiu · arquivo afetado.
 | nov/2026 | Roteiros de vídeo: gancho e virada literais, meio em tópicos; até ~130 palavras para paciente | Análise dos vídeos | `estilo-em-video.md` |
 | nov/2026 | Abertura do curso em três vídeos (apresentação, como funciona, abertura do bônus), a regravar de dia | Weverton | `roteiros/curso-apresentacao-regravacao.md` |
 | nov/2026 | Vídeos nunca entram no repositório; ficam no desktop e no Drive | Weverton | `CLAUDE.md` |
+| 16/11/2026 | Base visual: neutros dos stories de 13/11 (branco, névoa, cinza; Oswald + Montserrat + Cormorant) com o ouro `#B89A6A` da família Véras como destaque. Substitui a dúvida terracota × caramelo | Weverton | `.claude/skills/mari-veras/references/visual.md`, `identidade-visual.md` |
+| 16/11/2026 | Skill `mari-veras` cobre conteúdo, marketing, cursos, slides, infográficos e PDFs com o nome dela; burocracia fica na `documentos-institucionais-veras`; cursos saem da `conteudo-educacional-veras` | Weverton | `.claude/skills/mari-veras/SKILL.md` |
+| 16/11/2026 | Imagem de ferida publicada sempre com o leito pixelado (padrão dos stories de 13/11) | Mariana (prática) | `references/cofen.md` |
 | nov/2026 | Assistente funciona em dois lugares: Projeto no Claude.ai e Claude Code (repositório como fonte da verdade) | Weverton | `README.md` |
 
 ## Pendente
@@ -21,8 +24,8 @@ Formato das decisões: data · decisão · quem decidiu · arquivo afetado.
 | Tema | O que falta | Quem resolve |
 | --- | --- | --- |
 | Visualizações dos reels | Confirmar quais tiveram 5,1 mil e 1,8 mil (hipótese: "Amputação" = 5,1 mil) | Mariana |
-| Cor de destaque | Terracota `#C8652A` (vídeos) ou caramelo `#9A7559` (manual) | Mariana |
-| Identidade visual própria | Logotipo e visual da Mari Véras (hoje: base do manual) | Mariana |
+| Logotipo | Logotipo/assinatura gráfica da Mari Véras (o visual já foi decidido em 16/11) | Mariana |
+| Skill antiga de cursos | Desativar a `conteudo-educacional-veras` no Claude.ai depois de instalar a `mari-veras` | Weverton |
 | Nome dos produtos | Curso e consultoria se chamam os dois "Além do Curativo": manter como marca guarda-chuva ou renomear um | Mariana e Weverton |
 | Módulos do curso | Nomes e ordem depois de "cicatrização" e "bordas" | Mariana |
 | Bônus do curso | Resumão ou seis aulas curtas (uma por degrau); convite para a consultoria no fim? | Mariana |

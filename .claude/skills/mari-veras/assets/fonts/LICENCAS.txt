@@ -1,0 +1,5 @@
+Fontes incluídas nesta skill (Google Fonts), todas sob a SIL Open Font License 1.1 (texto em OFL.txt):
+- Oswald — The Oswald Project Authors
+- Montserrat — The Montserrat Project Authors
+- Cormorant Garamond — The Cormorant Project Authors
+Podem ser usadas, embutidas e redistribuídas junto com a skill; não podem ser vendidas sozinhas.

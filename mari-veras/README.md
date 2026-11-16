@@ -28,6 +28,9 @@ Não precisa subir `contexto/projeto-mari-veras-nov2026.md` (já está dentro de
 
 4. Peça do jeito que falaria com uma assistente: "faz um reels sobre unha encravada em diabético", "monta o carrossel do degrau 3", "slides da aula 1 do curso".
 
+### Skill `mari-veras` (Claude.ai e Claude Code)
+A skill em `.claude/skills/mari-veras/` é a marca pessoal da Mari: voz, visual, conteúdo, cursos e slides, com moldes prontos (`assets/mvarte.py` para stories, carrossel, infográfico e PDF; `assets/mvslides.js` para slides PPTX). No Claude.ai, envie o pacote `mari-veras.zip` em Configurações › Capacidades › Skills. Documentos burocráticos continuam na skill `documentos-institucionais-veras`; os cursos saíram da `conteudo-educacional-veras` e vieram para esta.
+
 ### No Claude Code (este repositório)
 A skill `mari-veras` carrega sozinha quando o pedido é sobre a marca. Aqui dá para **editar vídeo** (cortar, verticalizar, legendar, normalizar áudio), transcrever gravações e manter os arquivos do kit em dia.
 
