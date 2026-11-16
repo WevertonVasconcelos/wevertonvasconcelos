@@ -26,6 +26,8 @@ A skill `mari-veras` carrega sozinha quando o pedido é sobre a marca. Aqui dá 
 | `contexto/` | Documento-base do projeto (nov/2026) |
 | `transcricoes/` | Falas reais da Mariana (pendente: vídeos do Drive) |
 | `ferramentas/transcrever.py` | Transcreve vídeos em `.txt` e `.srt` |
+| `ferramentas/extrair_quadros.py` | Tira quadros e detecta cortes para análise visual |
+| `prompts/analise-videos-sessao-local.md` | Prompt da sessão local que analisa os vídeos |
 
 ## Pendências para a Mariana validar
 
