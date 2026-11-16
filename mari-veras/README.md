@@ -25,6 +25,7 @@ A skill `mari-veras` carrega sozinha quando o pedido é sobre a marca. Aqui dá 
 | `instagram-referencia.md` | Retrato do perfil em 15/11/2026 e ganchos que funcionam |
 | `estilo-em-video.md` | Como ela aparece, fala e é editada em vídeo; diretrizes de roteiro, gravação e edição |
 | `contexto/` | Documento-base do projeto (nov/2026) |
+| `roteiros/` | Roteiros prontos para gravar (ex.: regravação da apresentação do curso, com enquadramento) |
 | `transcricoes/` | Falas reais da Mariana: 11 reels, 1 bruto e o vídeo do curso |
 | `ferramentas/transcrever.py` | Transcreve vídeos em `.txt` e `.srt` |
 | `ferramentas/extrair_quadros.py` | Tira quadros e detecta cortes para análise visual |

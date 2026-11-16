@@ -237,7 +237,7 @@ Visualizações: **ainda não informadas** para cada vídeo. O que aparece nas g
 - **Som:** voz clara, sem ruído forte perceptível; leve reverberação de ambiente.
 - **Fala:** 154 ppm, olhando para a câmera, muito gesto de mão, sorriso constante. Conteúdo bom; frases longas encadeadas por "e…né".
 
-**Ajustar antes das próximas aulas**
+**Ajustar antes das próximas aulas** (roteiro e desenho de montagem da regravação em `roteiros/curso-apresentacao-regravacao.md`)
 1. **Gravar de dia, de frente para a janela** (luz natural no rosto), ou com uma luz de LED com softbox/ring **à frente e acima** da câmera. Desligar o abajur quente ou equilibrar com luz branca.
 2. **Tirar o notebook da frente** (ou abaixá-lo e virar o logotipo). Se precisar do roteiro, usar o celular como teleprompter **junto da lente**.
 3. **Aproximar a câmera:** plano médio (cintura para cima), ela levemente fora do centro, olhos no terço superior.
