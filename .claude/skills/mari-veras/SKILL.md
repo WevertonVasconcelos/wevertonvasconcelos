@@ -9,7 +9,10 @@ Antes de criar, leia o que a tarefa pede dentro de `mari-veras/`:
 
 | Arquivo | Quando ler |
 | --- | --- |
-| `mari-veras/instrucoes-projeto-claude.md` | Sempre: quem ela é, regras e formatos |
+| `mari-veras/instrucoes-projeto-claude.md` | Sempre: papel, voz, regras e formatos |
+| `mari-veras/contexto-atual.md` | Negócio, produtos, perfil, regras (nov/2026) |
+| `mari-veras/exemplos-de-referencia.md` | Calibrar o tom com exemplos reais |
+| `mari-veras/decisoes-e-pendencias.md` | O que já foi decidido e o que falta |
 | `mari-veras/guia-de-voz.md` | Todo texto |
 | `mari-veras/checklist-publicacao.md` | Toda peça pública (regras do COFEN) |
 | `mari-veras/identidade-visual.md` | Slides, carrossel, capa, qualquer visual |
@@ -17,7 +20,11 @@ Antes de criar, leia o que a tarefa pede dentro de `mari-veras/`:
 | `mari-veras/instagram-referencia.md` | Ideias de pauta e ganchos que já funcionam |
 | `mari-veras/estilo-em-video.md` | Roteiro de vídeo, gravação e edição: ritmo, gestos, bordões falados, legenda e capa |
 | `mari-veras/transcricoes/` | Falas reais dela (reels, brutos e curso) |
-| `mari-veras/contexto/projeto-mari-veras-nov2026.md` | Negócio, preços, decisões em aberto |
+| `mari-veras/contexto/` | Documento-base original e PDF do manual da consultoria |
+
+## Quando chegar um bloco "Registrar no kit:" (vindo do Projeto no Claude.ai)
+
+Aplique cada item no arquivo indicado, registre a decisão em `decisoes-e-pendencias.md` com a data, rode `python mari-veras/ferramentas/consolidar_transcricoes.py` se mexeu em transcrições, faça commit e diga quais arquivos o Weverton precisa trocar no Projeto.
 
 ## Regras rápidas
 
