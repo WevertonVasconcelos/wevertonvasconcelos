@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#f6f5f1" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#16171a" media="(prefers-color-scheme: dark)">
+  <title>Minhas Notas</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='4' y='3' width='24' height='26' rx='5' fill='%232f6f5e'/%3E%3Cpath d='M10 11h12M10 16h12M10 21h8' stroke='white' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Aviso quando o config.js ainda não foi preenchido -->
+  <section id="tela-config" class="tela tela-central" hidden>
+    <div class="cartao">
+      <h1 class="marca"><span class="marca-icone" aria-hidden="true"></span>Minhas Notas</h1>
+      <p>O site ainda não foi ligado ao banco de dados.</p>
+      <p class="suave">Preencha <code>SUPABASE_URL</code> e <code>SUPABASE_ANON_KEY</code> no arquivo <code>config.js</code>. O passo a passo está no arquivo <code>LEIAME.md</code>.</p>
+    </div>
+  </section>
+
+  <!-- Login -->
+  <section id="tela-login" class="tela tela-central" hidden>
+    <form id="form-login" class="cartao" autocomplete="off" novalidate>
+      <h1 class="marca"><span class="marca-icone" aria-hidden="true"></span>Minhas Notas</h1>
+      <label class="campo">
+        <span>Usuário</span>
+        <input id="login-usuario" name="usuario" type="text" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="off" required>
+      </label>
+      <label class="campo">
+        <span>Senha</span>
+        <input id="login-senha" name="senha" type="password" autocomplete="off" required>
+      </label>
+      <label class="marcar">
+        <input id="login-lembrar" type="checkbox">
+        <span>Manter conectado neste aparelho<small>Marque só no seu celular. Em computador do hospital, deixe desmarcado.</small></span>
+      </label>
+      <p id="login-erro" class="erro" role="alert" hidden></p>
+      <button id="login-botao" class="botao botao-primario botao-largo" type="submit">Entrar</button>
+    </form>
+  </section>
+
+  <!-- Aplicativo -->
+  <div id="tela-app" class="tela app" hidden>
+    <header class="topo">
+      <div class="marca marca-pequena"><span class="marca-icone" aria-hidden="true"></span>Minhas Notas</div>
+      <div class="topo-acoes">
+        <span id="topo-usuario" class="suave topo-usuario"></span>
+        <details class="menu">
+          <summary class="botao botao-fantasma" aria-label="Mais opções">⋯</summary>
+          <div class="menu-lista">
+            <button id="botao-trocar-senha" type="button">Trocar senha</button>
+            <button id="botao-sair-todos" type="button">Sair de todos os aparelhos</button>
+          </div>
+        </details>
+        <button id="botao-sair" class="botao botao-contorno" type="button">Sair</button>
+      </div>
+    </header>
+
+    <aside class="lateral" aria-label="Lista de notas">
+      <div class="lateral-topo">
+        <button id="botao-nova" class="botao botao-primario botao-largo" type="button">+ Nova nota</button>
+        <input id="busca" class="busca" type="search" placeholder="Buscar nas notas" aria-label="Buscar nas notas">
+      </div>
+      <ul id="lista-notas" class="lista-notas"></ul>
+      <p id="lista-vazia" class="lista-vazia suave" hidden>Nenhuma nota ainda.</p>
+    </aside>
+
+    <main class="editor" aria-live="polite">
+      <div id="editor-vazio" class="editor-vazio">
+        <p>Escolha uma nota ao lado ou crie uma nova.</p>
+      </div>
+
+      <div id="editor-nota" class="editor-nota" hidden>
+        <div class="editor-barra">
+          <button id="botao-voltar" class="botao botao-fantasma voltar" type="button" aria-label="Voltar para a lista">← Notas</button>
+          <span id="status" class="status suave" aria-live="polite"></span>
+          <div class="editor-acoes">
+            <button id="botao-copiar" class="botao botao-contorno" type="button">Copiar texto</button>
+            <button id="botao-excluir" class="botao botao-perigo-texto" type="button">Excluir</button>
+          </div>
+        </div>
+
+        <input id="nota-titulo" class="nota-titulo" type="text" maxlength="200" placeholder="Título da nota" aria-label="Título da nota (toque para renomear)">
+
+        <textarea id="nota-conteudo" class="nota-conteudo" placeholder="Escreva aqui…" aria-label="Texto da nota"></textarea>
+
+        <section class="anexos" aria-label="Anexos">
+          <div class="anexos-topo">
+            <h2>Anexos</h2>
+            <label class="botao botao-contorno" for="entrada-arquivo">📎 Anexar arquivo</label>
+            <input id="entrada-arquivo" type="file" multiple hidden>
+          </div>
+          <p class="suave anexos-dica">Fotos, PDFs, documentos… até 50 MB cada.</p>
+          <ul id="lista-anexos" class="lista-anexos"></ul>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div id="aviso" class="aviso" role="status" hidden></div>
+
+  <script src="vendor/supabase.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
