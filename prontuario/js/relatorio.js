@@ -3,6 +3,7 @@
 import { escaparHTML as e, dataBR, dataHoraBR, idade, numeroBR, moeda } from "./util.js";
 import { ANAMNESE, AVALIACAO, PLANO_CUIDADOS, FIGURAS_CORPO, OMITIR_NA_EVOLUCAO } from "./campos.js";
 import { valorTexto, areaLesao, calcularPush } from "./formulario.js";
+import { PE_DIABETICO, temPeDiabetico, calcularPeDiabetico, textoResumoPeDiabetico } from "./pediabetico.js";
 
 // dados: { paciente, admissoes, lesoes, evolucoes, arquivos, equipe }
 // srcArquivo(arquivo) -> endereço da foto ; base -> pasta do site (para logo e figuras)
@@ -62,10 +63,16 @@ export function htmlProntuario(dados, { srcArquivo, base = "", geradoPor }) {
 
   const paginasAdmissao = admissoes.map((adm) => `
     <section class="pagina">${topo(ANAMNESE.titulo)}${painel}
-      <p class="data-adm">Admissão de ${e(dataBR(adm.data))}</p>${folha(ANAMNESE, adm.dados)}${assinatura(adm.data, adm.criado_por)}</section>
+      <p class="data-adm">${adm.tipo === "readmissão" ? "Readmissão" : "Admissão"} de ${e(dataBR(adm.data))}${adm.alta_em ? " · alta em " + e(dataBR(adm.alta_em)) + (adm.alta_motivo ? " (" + e(adm.alta_motivo) + ")" : "") : ""}</p>${folha(ANAMNESE, adm.dados)}${assinatura(adm.data, adm.criado_por)}</section>
     <section class="pagina">${topo(AVALIACAO.titulo)}${folha(AVALIACAO, adm.dados)}${(() => { const pu = calcularPush(adm.dados); return pu && pu.total != null ? `<p class="push">PUSH ${pu.total}</p>` : ""; })()}${assinatura(adm.data, adm.criado_por)}</section>
+    ${temPeDiabetico(adm.dados) ? `<section class="pagina">${topo(PE_DIABETICO.titulo, true)}${folha(PE_DIABETICO, adm.dados)}<p class="push">${e(resumoPe(adm.dados))}</p>${assinatura(adm.data, adm.criado_por)}</section>` : ""}
     <section class="pagina">${topo(PLANO_CUIDADOS.titulo, true)}${folha(PLANO_CUIDADOS, adm.dados)}${assinatura(adm.data, adm.criado_por)}</section>`).join("");
 
+  function resumoPe(d) {
+    const r = calcularPeDiabetico(d);
+    return [textoResumoPeDiabetico(r), r.psp != null ? "PSP: " + (r.psp ? "sim" : "não") : "", r.dap != null ? "DAP: " + (r.dap ? "sim" : "não") : "",
+      "SINBAD " + r.sinbad.itens.map((i) => i[0] + (i[2] == null ? "?" : i[2])).join(" ")].filter(Boolean).join(" · ");
+  }
   const linhasSessoes = evolucoes.map((ev) => {
     const fotos = arquivos.filter((a) => a.evolucao_id === ev.id && imagem(a));
     const pu = calcularPush(ev.avaliacao);
@@ -78,6 +85,7 @@ export function htmlProntuario(dados, { srcArquivo, base = "", geradoPor }) {
       ${ev.conduta ? `<p class="resp"><b>Conduta:</b> ${e(ev.conduta)}</p>` : ""}
       ${area != null ? `<p class="resp"><b>Medidas:</b> ${numeroBR(ev.avaliacao.lesao_comprimento, 2)} × ${numeroBR(ev.avaliacao.lesao_largura, 2)} cm (${numeroBR(area, 2)} cm²)</p>` : ""}
       ${av ? `<details open><summary>Avaliação da lesão</summary><div class="av">${av}</div></details>` : ""}
+      ${temPeDiabetico(ev.avaliacao) ? `<p class="resp"><b>Pé diabético:</b> ${e(resumoPe(ev.avaliacao))}</p>` : ""}
       ${mats ? `<p class="resp"><b>Materiais:</b> ${mats}</p>` : ""}
       ${fotos.length ? `<div class="fotos">${fotos.map((a) => `<img src="${e(srcArquivo(a))}" alt="">`).join("")}</div>` : ""}
       <p class="carimbo">${e(carimbo(ev.criado_por))}</p></td></tr>`;

@@ -203,6 +203,38 @@ create table if not exists public.pagamentos (
   atualizado_por uuid
 );
 
+-- 8) Simulador de preços e configurações ----------------------
+create table if not exists public.simulacoes (
+  id             uuid primary key default gen_random_uuid(),
+  paciente_id    uuid references public.pacientes (id) on delete set null,
+  tipo           text not null default 'plano',      -- plano | produto
+  descricao      text,
+  dados          jsonb not null default '{}'::jsonb,  -- o que foi digitado
+  resultado      jsonb not null default '{}'::jsonb,  -- o que foi calculado
+  criado_em      timestamptz not null default now(),
+  criado_por     uuid default auth.uid(),
+  atualizado_em  timestamptz not null default now(),
+  atualizado_por uuid
+);
+
+create table if not exists public.configuracoes (
+  id             uuid primary key default gen_random_uuid(),
+  chave          text not null unique,               -- ex.: 'simulador'
+  valor          jsonb not null default '{}'::jsonb,
+  criado_em      timestamptz not null default now(),
+  criado_por     uuid default auth.uid(),
+  atualizado_em  timestamptz not null default now(),
+  atualizado_por uuid
+);
+
+-- Campos acrescentados depois (rodar de novo o arquivo não apaga nada)
+alter table public.pacientes add column if not exists pasta_link text;           -- link da pasta no Drive
+alter table public.admissoes add column if not exists tipo text not null default 'admissão';  -- admissão | readmissão
+alter table public.admissoes add column if not exists admissao_anterior_id uuid references public.admissoes (id) on delete restrict;
+alter table public.admissoes add column if not exists alta_em date;
+alter table public.admissoes add column if not exists alta_motivo text;
+alter table public.evolucoes add column if not exists admissao_id uuid references public.admissoes (id) on delete restrict;
+
 -- Índices -------------------------------------------------------
 create index if not exists admissoes_paciente_idx on public.admissoes (paciente_id, data desc);
 create index if not exists lesoes_paciente_idx    on public.lesoes (paciente_id);
@@ -214,6 +246,8 @@ create index if not exists evomat_evolucao_idx    on public.evolucao_materiais (
 create index if not exists planos_paciente_idx    on public.planos (paciente_id);
 create index if not exists pagamentos_paciente_idx on public.pagamentos (paciente_id, data);
 create index if not exists pagamentos_data_idx    on public.pagamentos (data);
+create index if not exists evolucoes_admissao_idx on public.evolucoes (admissao_id);
+create index if not exists simulacoes_criado_idx  on public.simulacoes (criado_em desc);
 
 -- Gatilhos, permissões e regras de segurança em todas as tabelas ---
 do $$
@@ -221,7 +255,8 @@ declare
   t text;
 begin
   foreach t in array array['pacientes','admissoes','lesoes','evolucoes','arquivos',
-                           'materiais','evolucao_materiais','planos','pagamentos']
+                           'materiais','evolucao_materiais','planos','pagamentos',
+                           'simulacoes','configuracoes']
   loop
     execute format('drop trigger if exists carimbar on public.%I', t);
     execute format('create trigger carimbar before update on public.%I
@@ -249,7 +284,7 @@ begin
   -- Registro clínico NÃO se apaga (só se corrige, e a versão antiga fica no histórico).
   -- Podem ser apagados: foto/arquivo enviado errado, material lançado errado,
   -- plano e pagamento lançados errado, item do catálogo de materiais.
-  foreach t in array array['arquivos','evolucao_materiais','planos','pagamentos','materiais']
+  foreach t in array array['arquivos','evolucao_materiais','planos','pagamentos','materiais','simulacoes']
   loop
     execute format('create policy "equipe apaga" on public.%I for delete to authenticated
                     using ((select public.eh_da_equipe()))', t);
@@ -280,7 +315,7 @@ drop policy if exists "equipe lê histórico" on public.historico;
 create policy "equipe lê histórico" on public.historico for select to authenticated
   using ((select public.eh_da_equipe()));
 
--- 8) Pasta privada de arquivos (fotos, exames; até 25 MB cada) ----
+-- 9) Pasta privada de arquivos (fotos, exames; até 25 MB cada) ----
 insert into storage.buckets (id, name, public, file_size_limit)
 values ('prontuario', 'prontuario', false, 26214400)
 on conflict (id) do update set public = false, file_size_limit = 26214400;

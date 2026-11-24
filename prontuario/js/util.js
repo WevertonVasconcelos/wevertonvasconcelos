@@ -1,5 +1,14 @@
 // Ferramentas pequenas usadas em todas as telas.
 
+// O navegador escreve "null" quando recebe um item vazio em append/replaceChildren.
+// Aqui os vazios são simplesmente ignorados, em todas as telas.
+for (const metodo of ["append", "replaceChildren", "prepend"]) {
+  for (const alvo of [Element.prototype, DocumentFragment.prototype]) {
+    const original = alvo[metodo];
+    alvo[metodo] = function (...itens) { return original.apply(this, itens.filter((x) => x != null && x !== false)); };
+  }
+}
+
 // Formulário com alterações não salvas (o app pergunta antes de sair da tela)
 export const edicao = { suja: false };
 

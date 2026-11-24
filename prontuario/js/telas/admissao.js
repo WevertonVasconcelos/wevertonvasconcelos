@@ -4,18 +4,36 @@ import { h, hojeISO, dataBR, avisar, mensagemErro, edicao } from "../util.js";
 import { FOLHAS_ADMISSAO, ANAMNESE, AVALIACAO, PLANO_CUIDADOS, camposDe } from "../campos.js";
 import { folhaEl, lerCampos, calcularPush, textoPush, tituloFicha } from "../formulario.js";
 import { painelFinanceiro, painelPaciente, abas } from "./componentes.js";
+import { blocoPeDiabetico, CAMPOS_PE_DIABETICO } from "../pediabetico.js";
+import { sincronizarPacienteSePuder } from "../pasta.js";
 
-const TODOS = () => camposDe(ANAMNESE, AVALIACAO, PLANO_CUIDADOS);
+const TODOS = () => [...camposDe(ANAMNESE, AVALIACAO, PLANO_CUIDADOS), ...CAMPOS_PE_DIABETICO()];
+// Na readmissão, o que é copiado da admissão anterior (histórico que não muda de um episódio para outro)
+const COPIAR_NA_READMISSAO = ["doencas", "doencas_quais", "doencas_outras", "medicamentos", "medicamentos_quais", "medicamentos_atencao",
+  "cirurgia", "cirurgia_qual", "alergias", "alergias_quais", "sono", "tabagismo", "etilismo", "dispositivos", "incontinencia",
+  "proteses", "proteses_qual", "mobilidade", "peso", "altura", "imc", "fatores", "pd_historia", "pd_tempo_dm"];
 let abaAtual = "anamnese";
 let continuarNaAba = null; // depois de salvar uma admissão nova, volta na mesma aba
 
 export async function telaAdmissao(tela, pacienteId, admissaoId) {
-  const [p, lesoes] = await Promise.all([
+  const [p, lesoes, anteriores] = await Promise.all([
     q(sb.from("pacientes").select("*").eq("id", pacienteId).single()),
     q(sb.from("lesoes").select("id").eq("paciente_id", pacienteId)),
+    q(sb.from("admissoes").select("id, data, dados, alta_em").eq("paciente_id", pacienteId).order("data", { ascending: false }).order("criado_em", { ascending: false })),
   ]);
-  let adm = { data: hojeISO(), dados: {} };
+  let adm = { data: hojeISO(), dados: {}, tipo: "admissão" };
+  let aviso = null;
   if (admissaoId) adm = await q(sb.from("admissoes").select("*").eq("id", admissaoId).single());
+  else if (anteriores.length) {
+    // Readmissão: mesmo prontuário, novo episódio. Copia o histórico clínico para só revisar.
+    const ult = anteriores[0];
+    const copia = {};
+    COPIAR_NA_READMISSAO.forEach((k) => { if (ult.dados[k] != null) copia[k] = ult.dados[k]; });
+    adm = { data: hojeISO(), dados: copia, tipo: "readmissão", admissao_anterior_id: ult.id };
+    aviso = h("p", { class: "aviso-ficha" }, h("b", null, "Readmissão. "),
+      `Comorbidades, medicações, alergias, hábitos e histórico do pé foram copiados da admissão de ${dataBR(ult.data)}. Revise o que mudou. `,
+      "A avaliação da lesão e o plano de cuidados começam em branco.");
+  }
   abaAtual = continuarNaAba || "anamnese";
   continuarNaAba = null;
 
@@ -32,14 +50,18 @@ export async function telaAdmissao(tela, pacienteId, admissaoId) {
     : null;
 
   const folhas = {};
+  const blocoPe = blocoPeDiabetico(adm.dados, () => lerCampos(folhas.avaliacao, camposDe(AVALIACAO)), { etiologia: adm.dados.lesao_etiologia });
   const tituloTopo = h("div");
   const areaFinanceiro = h("div");
-  const form = h("form", { oninput: () => { edicao.suja = true; atualizarPush(); } });
+  const form = h("form", { oninput: (ev) => {
+    edicao.suja = true; atualizarPush();
+    if (ev.target.name === "lesao_etiologia" && ev.target.value === "Pé diabético") blocoPe.abrir();
+  } });
 
   FOLHAS_ADMISSAO.forEach(({ chave, folha }) => {
     folhas[chave] = h("div", { class: "folha-aba", hidden: chave !== abaAtual },
       folhaEl(folha, adm.dados, { semTitulo: true }),
-      chave === "avaliacao" ? [pushEl, criarLesao] : null,
+      chave === "avaliacao" ? [pushEl, blocoPe.el, criarLesao] : null,
       chave === "plano" ? areaFinanceiro : null,
     );
   });
@@ -61,6 +83,7 @@ export async function telaAdmissao(tela, pacienteId, admissaoId) {
         h("input", { name: "data_admissao", type: "date", value: adm.data, required: true })),
       h("div", { class: "painel-campo meia sem-linha" }, h("a", { href: `#/paciente/${pacienteId}/editar`, class: "botao-link" }, "Editar dados do paciente")),
     )),
+    aviso,
     barraAbas,
     ...Object.values(folhas),
     assinaturaEl,
@@ -73,6 +96,7 @@ export async function telaAdmissao(tela, pacienteId, admissaoId) {
   function atualizarPush() {
     const pu = calcularPush(lerCampos(folhas.avaliacao, camposDe(AVALIACAO)));
     pushEl.textContent = pu ? textoPush(pu) : "";
+    blocoPe.atualizar();
   }
   atualizarPush();
 
@@ -83,6 +107,7 @@ export async function telaAdmissao(tela, pacienteId, admissaoId) {
     const ids = new Set(TODOS().map((c) => c.id));
     for (const [k, v] of Object.entries(adm.dados || {})) if (!(k in dados) && !ids.has(k)) dados[k] = v;
     const registroAdm = { paciente_id: pacienteId, data: form.elements.data_admissao.value || hojeISO(), dados };
+    if (!adm.id) { registroAdm.tipo = adm.tipo; registroAdm.admissao_anterior_id = adm.admissao_anterior_id || null; }
     const botao = form.querySelector("[type=submit]");
     botao.disabled = true;
     botao.textContent = "Salvando…";
@@ -96,8 +121,11 @@ export async function telaAdmissao(tela, pacienteId, admissaoId) {
         }).select().single());
         salvo = await q(sb.from("admissoes").update({ dados: { ...dados, lesao_id: lesao.id } }).eq("id", salvo.id).select().single());
       }
+      // Readmissão de quem estava de alta: volta a ficar "em tratamento"
+      if (!adm.id && p.situacao !== "em tratamento") await q(sb.from("pacientes").update({ situacao: "em tratamento" }).eq("id", pacienteId));
       edicao.suja = false;
-      avisar("Admissão salva.");
+      avisar(adm.tipo === "readmissão" && !adm.id ? "Readmissão salva." : "Admissão salva.");
+      sincronizarPacienteSePuder(pacienteId);
       if (!adm.id) { continuarNaAba = abaAtual; location.hash = `#/paciente/${pacienteId}/admissao/${salvo.id}`; }
       else { adm = salvo; botao.disabled = false; botao.textContent = "Salvar admissão"; }
     } catch (e) {
@@ -111,7 +139,9 @@ export async function telaAdmissao(tela, pacienteId, admissaoId) {
     h("div", { class: "cabecalho-ficha" },
       h("div", { class: "esquerda" },
         h("a", { href: "#/paciente/" + pacienteId, class: "voltar" }, "‹ " + p.nome),
-        h("p", { class: "subtitulo" }, adm.id ? "Admissão de " + dataBR(adm.data) : "Nova admissão")),
+        h("p", { class: "subtitulo" }, adm.id
+          ? (adm.tipo === "readmissão" ? "Readmissão de " : "Admissão de ") + dataBR(adm.data) + (adm.alta_em ? " · alta em " + dataBR(adm.alta_em) : "")
+          : adm.tipo === "readmissão" ? "Readmissão (novo episódio)" : "Nova admissão")),
       h("div", { class: "direita" }, tituloTopo)),
     form,
   );

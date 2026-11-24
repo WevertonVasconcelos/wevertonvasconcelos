@@ -3,6 +3,7 @@ import { sb, q } from "../banco.js";
 import { h, dataBR, dataHoraBR, idade, semAcentos, avisar, mensagemErro, edicao } from "../util.js";
 import { SITUACOES_PACIENTE } from "../campos.js";
 import { cabecalho, abas } from "./componentes.js";
+import { sincronizarPacienteSePuder } from "../pasta.js";
 
 let filtroSituacao = "em tratamento";
 let textoBusca = "";
@@ -83,6 +84,7 @@ export async function telaPacienteEditar(tela, id) {
         h("label", { class: "painel-campo meia" }, h("span", { class: "rotulo" }, "Situação"),
           h("select", { name: "situacao", value: p.situacao }, SITUACOES_PACIENTE.map((s) => h("option", { value: s }, s)))),
         linha("observacoes", "Observações", "meia"),
+        linha("pasta_link", "Link da pasta no Drive (opcional)", "", { type: "url" }),
       ),
     ),
     h("div", { class: "acoes-form" },
@@ -94,7 +96,7 @@ export async function telaPacienteEditar(tela, id) {
   form.addEventListener("submit", async (ev) => {
     ev.preventDefault();
     const dados = {};
-    ["nome", "data_nascimento", "cpf", "telefone", "situacao", "endereco", "responsavel", "responsavel_telefone", "observacoes"]
+    ["nome", "data_nascimento", "cpf", "telefone", "situacao", "endereco", "responsavel", "responsavel_telefone", "observacoes", "pasta_link"]
       .forEach((k) => { const v = form.elements[k].value.trim(); dados[k] = v === "" ? null : v; });
     const sexo = form.querySelector('[name="sexo"]:checked');
     dados.sexo = sexo ? sexo.value : null;
@@ -107,6 +109,7 @@ export async function telaPacienteEditar(tela, id) {
       else salvo = await q(sb.from("pacientes").insert(dados).select().single());
       edicao.suja = false;
       avisar("Paciente salvo.");
+      sincronizarPacienteSePuder(salvo.id);
       location.hash = id ? "#/paciente/" + id : "#/paciente/" + salvo.id + "/admissao";
     } catch (erro) {
       avisar(mensagemErro(erro), "erro");

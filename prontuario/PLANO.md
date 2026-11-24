@@ -58,6 +58,15 @@ e a pasta de fotos no Google Fotos.
 - [x] Cadastro do paciente
 - [x] Admissão nas 3 folhas da Mariana (Anamnese, Avaliação da Lesão, Plano de Cuidados) e readmissão
 - [x] Mapa do corpo para marcar o local da lesão
+- [x] **Avaliação do pé diabético** (botão na Avaliação da lesão), pelas diretrizes IWGDF 2023:
+      neuropatia (monofilamento 10 g, diapasão 128 Hz, Ipswich), DAP (pulsos, Doppler, ITB, ITD,
+      pressão do hálux, TcPO2), deformidades e lesões pré-ulcerativas, infecção IWGDF/IDSA (graus 1 a 4 e (O)),
+      SINBAD (item a item), WIfI, calçado e descarga; calcula a categoria de risco IWGDF e o intervalo de rastreio
+- [x] **Episódios de tratamento**: um só prontuário por paciente; alta e readmissão como novos episódios,
+      com a anamnese da readmissão já preenchida com o histórico e as sessões ligadas ao episódio
+- [x] **Simulador de curativos** no Financeiro (mesma lógica da planilha SIMULADOR DE CURATIVOS TESTE),
+      com histórico de simulações e botão para virar o plano do paciente
+- [x] **Pasta de cada paciente no Mac** (e no Drive, se a pasta estiver no Google Drive) + link da pasta no cadastro
 - [x] Escala PUSH calculada e folha de Cicatrização com gráfico
 - [x] Lesões por paciente
 - [x] Evolução com texto, avaliação, fotos, materiais e pagamento
@@ -84,7 +93,11 @@ e a pasta de fotos no Google Fotos.
 8. **Backup automático** semanal para o Google Drive, ou o plano Pro do Supabase (US$ 25/mês, com backup diário).
 9. **Controle de estoque** dos materiais, se fizer sentido.
 
-## 5. Cuidados legais (conferir com a assessoria)
+## 5. Cuidados legais e clínicos (conferir)
+
+- **Pé diabético**: os cálculos seguem as diretrizes IWGDF 2023 (prevenção; DAP IWGDF/ESVS/SVS;
+  infecção IWGDF/IDSA; classificação com SINBAD e WIfI). São apoio à decisão: quem conclui é a enfermeira.
+  Pontos de corte usados: ITB fora de 0,9–1,3, ITD < 0,70, pressão do hálux < 30 mmHg, TcPO2 < 25 mmHg. **[CONFERIR com a Mariana]**
 
 - **Escala PUSH**: o cálculo segue a PUSH 3.0 (área 0 a 10, exsudato 0 a 3, tecido 0 a 4).
   Como a ficha permite marcar mais de uma opção, o sistema usa a maior quantidade de

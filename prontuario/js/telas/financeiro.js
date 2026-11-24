@@ -3,6 +3,7 @@ import { sb, q } from "../banco.js";
 import { h, moeda, dataBR } from "../util.js";
 import { TIPOS_PLANO } from "../campos.js";
 import { numero, cabecalho, pilula } from "./componentes.js";
+import { abasFinanceiro } from "./simulador.js";
 
 let mesEscolhido = null;
 
@@ -47,6 +48,7 @@ export async function telaFinanceiro(tela) {
         type: "month", class: "seletor-mes", value: mesEscolhido, "aria-label": "Mês",
         onchange: (e) => { if (e.target.value) { mesEscolhido = e.target.value; window.dispatchEvent(new HashChangeEvent("hashchange")); } },
       }) }),
+    abasFinanceiro("mes"),
     h("div", { class: "numeros" },
       numero("Recebido no mês", moeda(recebido), "destaque"),
       numero("Custo de material", moeda(custoTotal)),

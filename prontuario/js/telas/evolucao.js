@@ -4,21 +4,24 @@ import { h, moeda, numeroOuNulo, paraInputDataHora, dataLocalISO, dataBR, avisar
 import { AVALIACAO, OMITIR_NA_EVOLUCAO, TIPOS_ATENDIMENTO, LOCAIS_ATENDIMENTO, FORMAS_PAGAMENTO, camposDe } from "../campos.js";
 import { folhaEl, lerCampos, calcularPush, textoPush } from "../formulario.js";
 import { escolherFotos, gradeFotos, abas, quadro, cabecalho } from "./componentes.js";
+import { blocoPeDiabetico, CAMPOS_PE_DIABETICO } from "../pediabetico.js";
+import { sincronizarPacienteSePuder } from "../pasta.js";
 
-const CAMPOS_AV = () => camposDe(AVALIACAO).filter((c) => !OMITIR_NA_EVOLUCAO.includes(c.id));
+const CAMPOS_AV = () => [...camposDe(AVALIACAO).filter((c) => !OMITIR_NA_EVOLUCAO.includes(c.id)), ...CAMPOS_PE_DIABETICO()];
 
 export async function telaEvolucao(tela, pacienteIdNovo, evolucaoId) {
   let e = { data: new Date().toISOString(), avaliacao: {}, evolucao_materiais: [], tipo: "Curativo", local_atendimento: "Clinical Center" };
   if (evolucaoId) e = await q(sb.from("evolucoes").select("*, evolucao_materiais(*)").eq("id", evolucaoId).single());
   const pacienteId = pacienteIdNovo || e.paciente_id;
 
-  const [p, lesoes, materiais, fotosExistentes, anterior, pagamentoExistente] = await Promise.all([
+  const [p, lesoes, materiais, fotosExistentes, anterior, pagamentoExistente, admissoes] = await Promise.all([
     q(sb.from("pacientes").select("id, nome").eq("id", pacienteId).single()),
-    q(sb.from("lesoes").select("id, nome, situacao").eq("paciente_id", pacienteId).order("criado_em")),
+    q(sb.from("lesoes").select("id, nome, situacao, etiologia").eq("paciente_id", pacienteId).order("criado_em")),
     q(sb.from("materiais").select("*").order("nome")),
     evolucaoId ? q(sb.from("arquivos").select("*").eq("evolucao_id", evolucaoId).order("criado_em")) : [],
     evolucaoId ? [] : q(sb.from("evolucoes").select("lesao_id, tipo, local_atendimento").eq("paciente_id", pacienteId).order("data", { ascending: false }).limit(1)),
     evolucaoId ? q(sb.from("pagamentos").select("*").eq("evolucao_id", evolucaoId).limit(1)) : [],
+    q(sb.from("admissoes").select("id, data, tipo, alta_em, criado_em").eq("paciente_id", pacienteId).order("data", { ascending: false }).order("criado_em", { ascending: false })),
   ]);
   // Sessão nova começa com a lesão, o tipo e o local da última
   if (!evolucaoId && anterior.length) {
@@ -92,9 +95,11 @@ export async function telaEvolucao(tela, pacienteIdNovo, evolucaoId) {
       h("p", { class: "texto-suave pequeno" }, "As fotos são reduzidas antes de enviar e ficam só no prontuário.")),
   );
 
-  // ----- Aba 2: avaliação da lesão (mesma folha da admissão) -----
-  const abaAvaliacao = h("div", { class: "aba-corpo", hidden: true },
-    folhaEl(AVALIACAO, e.avaliacao || {}, { omitir: OMITIR_NA_EVOLUCAO, semTitulo: true }), pushEl);
+  // ----- Aba 2: avaliação da lesão (mesma folha da admissão) + pé diabético -----
+  const etiologiaLesao = (lesoes.find((l) => l.id === e.lesao_id) || {}).etiologia;
+  const abaAvaliacao = h("div", { class: "aba-corpo", hidden: true });
+  const blocoPe = blocoPeDiabetico(e.avaliacao || {}, () => lerCampos(abaAvaliacao, camposDe(AVALIACAO)), { etiologia: etiologiaLesao });
+  abaAvaliacao.append(folhaEl(AVALIACAO, e.avaliacao || {}, { omitir: OMITIR_NA_EVOLUCAO, semTitulo: true }), pushEl, blocoPe.el);
 
   // ----- Aba 3: materiais e pagamento -----
   const abaMateriais = h("div", { class: "aba-corpo", hidden: true },
@@ -121,7 +126,13 @@ export async function telaEvolucao(tela, pacienteIdNovo, evolucaoId) {
     barraAbas.replaceChildren(abas([["sessao", "Sessão"], ["avaliacao", "Avaliação da lesão"], ["materiais", "Materiais e pagamento"]], k, mostrarAba));
   }
 
-  const form = h("form", { oninput: () => { edicao.suja = true; atualizarPush(); } },
+  const form = h("form", { oninput: () => { edicao.suja = true; atualizarPush(); },
+    onchange: (ev) => {
+      if (ev.target.name === "lesao_id") {
+        const l = lesoes.find((x) => x.id === ev.target.value);
+        if (l && l.etiologia === "Pé diabético") blocoPe.abrir();
+      }
+    } },
     barraAbas, abaSessao, abaAvaliacao, abaMateriais,
     h("p", { class: "assinatura-ficha" }, h("span", null, "Carimbo: ", h("b", null,
       [sessao.membro && sessao.membro.nome, sessao.membro && sessao.membro.registro].filter(Boolean).join(" · ")))),
@@ -133,6 +144,7 @@ export async function telaEvolucao(tela, pacienteIdNovo, evolucaoId) {
   function atualizarPush() {
     const pu = calcularPush(lerCampos(abaAvaliacao, CAMPOS_AV()));
     pushEl.textContent = pu ? textoPush(pu) : "Preencha comprimento, largura, exsudato e tecido para calcular o PUSH.";
+    blocoPe.atualizar();
   }
   atualizarPush();
   mostrarAba("sessao");
@@ -155,6 +167,14 @@ export async function telaEvolucao(tela, pacienteIdNovo, evolucaoId) {
       proximo_atendimento: f.proximo_atendimento.value || null,
       avaliacao: lerCampos(abaAvaliacao, CAMPOS_AV()),
     };
+    // Liga a sessão ao episódio (admissão ou readmissão) em que ela aconteceu
+    const diaSessao = dataLocalISO(registro.data);
+    // Sessão já ligada continua no mesmo episódio; nova vai para o episódio aberto (sem alta)
+    const episodio = (e.admissao_id && admissoes.find((a) => a.id === e.admissao_id))
+      || admissoes.find((a) => !a.alta_em && a.data <= diaSessao)
+      || admissoes.find((a) => a.data <= diaSessao)
+      || admissoes[admissoes.length - 1];
+    registro.admissao_id = episodio ? episodio.id : null;
     let salvo;
     try {
       // 1) sessão
@@ -192,6 +212,7 @@ export async function telaEvolucao(tela, pacienteIdNovo, evolucaoId) {
       }
     }
     edicao.suja = false;
+    sincronizarPacienteSePuder(pacienteId);
     if (falhas.length) {
       avisar(`Sessão salva, mas ${falhas.length} foto(s) não foram enviadas. Abra a sessão e tente de novo.`, "erro");
       location.hash = "#/evolucao/" + salvo.id;

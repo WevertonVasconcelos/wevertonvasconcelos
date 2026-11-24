@@ -3,6 +3,7 @@ import { sb, q, sessao, baixarArquivo } from "../banco.js";
 import { h, criarZip, baixar, avisar, mensagemErro, nomeArquivoSeguro, hojeISO, dataHoraBR } from "../util.js";
 import { htmlProntuario, buscarDadosProntuario, separarPorPaciente } from "../relatorio.js";
 import { cabecalho, quadro } from "./componentes.js";
+import * as pastaMac from "../pasta.js";
 import { FIGURAS_CORPO } from "../campos.js";
 
 const CHAVE = "prontuario.ultimoBackup";
@@ -50,6 +51,7 @@ export async function telaBackup(tela) {
 
   tela.append(
     cabecalho({ titulo: ["CÓPIA DE", "SEGURANÇA"] }),
+    await quadroPastaMac(),
     quadro("Fazer backup",
       h("p", null, u ? "Último backup neste aparelho: " + dataHoraBR(u) : "Nenhum backup feito neste aparelho ainda."),
       h("div", { class: "pilha-botoes" }, botoes),
@@ -170,4 +172,58 @@ async function gerarBackup(comArquivos, informar) {
   });
   informar("Montando o arquivo .zip…", 97);
   return criarZip(arquivosZip);
+}
+
+// ---------- Pasta do prontuário no Mac ----------
+async function quadroPastaMac() {
+  const estado = h("p");
+  const progresso = h("p", { class: "progresso", role: "status" });
+  const caixa = quadro("Pasta dos pacientes no Mac (e no Drive)");
+  if (!pastaMac.suportado) {
+    caixa.append(
+      h("p", null, "Este navegador não consegue gravar numa pasta do computador. No Mac, abra o prontuário pelo ", h("b", null, "Google Chrome"), " (ou Edge) para usar esta função."),
+      h("p", { class: "texto-suave pequeno" }, "No celular use normalmente: as fotos e dados ficam no banco e vão para a pasta na próxima vez que o prontuário for aberto no Chrome do Mac."));
+    return caixa;
+  }
+  const botaoEscolher = h("button", { type: "button", class: "botao botao-secundario" }, "Escolher pasta");
+  const botaoAtualizar = h("button", { type: "button", class: "botao botao-primario" }, "Atualizar pasta agora");
+  async function mostrar() {
+    const pasta = await pastaMac.pastaEscolhida();
+    const ult = await pastaMac.ultimaSincronizacao();
+    botaoAtualizar.hidden = !pasta;
+    botaoEscolher.textContent = pasta ? "Trocar pasta" : "Escolher pasta";
+    estado.replaceChildren(pasta
+      ? h("span", null, "Pasta escolhida: ", h("b", null, pasta.name), ult ? " · última atualização " + dataHoraBR(ult) : " · ainda não atualizada")
+      : h("span", null, "Nenhuma pasta escolhida neste computador."));
+  }
+  async function atualizar() {
+    const pasta = await pastaMac.pastaEscolhida();
+    if (!pasta) return;
+    if ((await pastaMac.permissao(pasta, true)) !== "granted") { progresso.textContent = "Sem permissão para gravar na pasta. Toque de novo e escolha “Permitir”."; return; }
+    botaoAtualizar.disabled = botaoEscolher.disabled = true;
+    try {
+      const r = await pastaMac.sincronizar(pasta, null, (t) => (progresso.textContent = t));
+      progresso.textContent = `Pronto: ${r.pacientes} paciente(s) atualizados, ${r.novos} arquivo(s) novo(s).`;
+    } catch (e) {
+      progresso.textContent = "Não foi possível atualizar: " + mensagemErro(e);
+    } finally {
+      botaoAtualizar.disabled = botaoEscolher.disabled = false;
+      mostrar();
+    }
+  }
+  botaoEscolher.addEventListener("click", async () => {
+    try { await pastaMac.escolherPasta(); await mostrar(); await atualizar(); }
+    catch (e) { if (e.name !== "AbortError") progresso.textContent = mensagemErro(e); }
+  });
+  botaoAtualizar.addEventListener("click", atualizar);
+  await mostrar();
+  caixa.append(
+    h("p", null, "Cada paciente ganha uma pasta própria (", h("b", null, "Pacientes / Nome - código"), ") com o prontuário completo em ", h("b", null, "prontuario.html"),
+      ", as fotos e os exames. Ela é atualizada sozinha quando você salva um paciente, uma admissão ou uma sessão neste computador."),
+    h("p", null, h("b", null, "Dica: "), "escolha uma pasta dentro do ", h("b", null, "Google Drive"), " no Mac (app Google Drive para computador). Assim tudo fica no Mac e no Drive ao mesmo tempo."),
+    estado,
+    h("div", { class: "pilha-botoes" }, botaoEscolher, botaoAtualizar),
+    progresso,
+  );
+  return caixa;
 }

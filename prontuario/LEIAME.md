@@ -10,22 +10,35 @@ site de notas: **Supabase** (banco de dados) + **Vercel** (site).
 
 ---
 
-## Passo 1: banco de dados no Supabase
+## Passo 0: juntar o código na branch principal (2 minutos)
+
+O código novo está na branch `claude/kind-hypatia-ci273x`. A Vercel publica a branch `main`.
+
+1. Abra <https://github.com/WevertonVasconcelos/wevertonvasconcelos>.
+2. Vai aparecer uma faixa amarela com **Compare & pull request**. Clique nela
+   (ou peça ao Claude: "abra o pull request").
+3. Clique em **Create pull request** e depois em **Merge pull request** > **Confirm merge**.
+
+## Passo 1: banco de dados no Supabase (10 minutos)
 
 1. Entre em <https://supabase.com> > **New project**
    - **Name:** `prontuario`
    - **Database Password:** *Generate* e guarde num lugar seguro
-   - **Region:** *South America (São Paulo)*
-2. Espere ficar pronto (1 a 2 minutos).
-3. **SQL Editor > New query**: cole **todo** o arquivo
-   [`supabase/setup.sql`](supabase/setup.sql) e clique em **Run**.
-   Deve terminar com *Success*.
-4. **Authentication > Sign In / Providers**: **desligue** *Allow new users to sign up*.
-5. **Authentication > Users > Add user > Create new user**, um para cada pessoa:
-   - `mariana@prontuario.app` + senha forte + marque **Auto Confirm User**
-   - `weverton@prontuario.app` + senha forte + **Auto Confirm User**
+   - **Region:** *South America (São Paulo)* · Plano **Free**
 
-   (não são e-mails de verdade; no site digita-se só `mariana` ou `weverton`)
+   > Se o Supabase disser que o plano grátis já tem 2 projetos ativos, dá para usar o
+   > projeto do site de notas: o prontuário cria tabelas e pasta de fotos separadas e
+   > só a equipe cadastrada no passo 1.6 enxerga os pacientes. Nesse caso pule para o 1.4.
+2. Espere ficar pronto (1 a 2 minutos).
+3. *(só em projeto novo)* **Authentication > Sign In / Providers**: **desligue** *Allow new users to sign up*.
+4. **SQL Editor > New query**: cole **todo** o arquivo [`supabase/setup.sql`](supabase/setup.sql) e clique em **Run**.
+   Deve terminar com *Success*. (Pode rodar de novo sempre que o arquivo mudar: não apaga nada.)
+5. **Authentication > Users > Add user > Create new user**, um para cada pessoa
+   (marque **Auto Confirm User**):
+   - `mariana@prontuario.app` + senha forte
+   - `weverton@prontuario.app` + senha forte
+
+   Não são e-mails de verdade; no site digita-se só `mariana` ou `weverton`.
 6. Volte no **SQL Editor** e rode isto para colocar os dois na equipe:
    ```sql
    insert into public.equipe (user_id, nome, registro)
@@ -38,44 +51,61 @@ site de notas: **Supabase** (banco de dados) + **Vercel** (site).
      from auth.users where email = 'weverton@prontuario.app'
    on conflict (user_id) do nothing;
    ```
-7. **Project Settings > API Keys**: copie a **Project URL** e a
-   **Publishable key** (`sb_publishable_...`). ⚠️ Nunca a *secret*/*service_role*.
+7. **Project Settings > API Keys**: copie a **Project URL** e a **Publishable key**
+   (`sb_publishable_...`). ⚠️ Nunca a *secret* / *service_role*.
 
-## Passo 2: ligar o site ao banco
+## Passo 2: ligar o site ao banco (2 minutos)
 
-No GitHub, abra [`config.js`](config.js), clique no lápis ✏️ e preencha:
+No GitHub, abra [`prontuario/config.js`](config.js) (na branch `main`), clique no lápis ✏️ e preencha:
 
 ```js
 SUPABASE_URL: "https://xxxxxxxx.supabase.co",
 SUPABASE_ANON_KEY: "sb_publishable_xxxxxxxx",
 ```
 
-Salve com **Commit changes**.
+Salve com **Commit changes**. (Ou mande as duas informações para o Claude preencher.)
 
-## Passo 3: publicar na Vercel
+## Passo 3: publicar na Vercel (5 minutos)
 
-1. <https://vercel.com> > **Add New… > Project** > importe `wevertonvasconcelos`.
-2. **Root Directory:** `prontuario`. **Framework Preset:** *Other*. **Deploy**.
-3. Em *Settings > Domains* dá para trocar para algo como `prontuario-vv.vercel.app`
-   ou um domínio próprio (ex.: `prontuario.verasvasconcelos.com.br`).
+1. Entre em <https://vercel.com> e escolha o time **VERAS VASCONCELOS** (o mesmo do `minhas-notas`).
+2. **Add New… > Project** > importe o repositório `wevertonvasconcelos`.
+3. **Project Name:** `prontuario-veras` · **Root Directory:** `prontuario` · **Framework Preset:** *Other*. **Deploy**.
+4. O endereço fica como `https://prontuario-veras.vercel.app`. Em *Settings > Domains* dá para
+   usar um domínio próprio (ex.: `prontuario.verasvasconcelos.com.br`).
+5. Daqui em diante, toda mudança que entrar na `main` é publicada sozinha.
 
-## Passo 4: instalar no celular
+## Passo 4: instalar no celular e no Mac
 
-- **iPhone (Safari):** abra o endereço > botão Compartilhar > **Adicionar à Tela de Início**.
+- **iPhone (Safari):** abra o endereço > Compartilhar > **Adicionar à Tela de Início**.
 - **Android (Chrome):** menu ⋮ > **Instalar app**.
+- **Mac:** abra no **Google Chrome** (é ele que grava a pasta dos pacientes) > menu ⋮ >
+  *Transmitir, salvar e compartilhar* > **Instalar página como app**.
 - No celular da Mariana, marque **"Manter conectado neste aparelho"** no login.
-  Em computador de terceiros, **não** marque: o site sai sozinho depois de 30 minutos parado.
+  Em computador de terceiros, **não** marque.
 
-## Passo 5: primeiro uso
+## Passo 5: pasta dos pacientes no Mac e no Drive (5 minutos, uma vez)
+
+1. No Mac, instale o **Google Drive para computador** (<https://www.google.com/drive/download/>) e entre com a conta da empresa.
+   Aparece uma pasta "Google Drive" no Finder.
+2. Dentro dela, crie a pasta **Prontuário Véras Vasconcelos**.
+3. No prontuário (Chrome do Mac): **Backup > Pasta dos pacientes no Mac > Escolher pasta** e escolha essa pasta.
+   Clique em **Permitir** quando o Chrome perguntar (marque "permitir sempre", se aparecer).
+4. Pronto: cada paciente ganha a pasta `Pacientes/Nome - código/` com `prontuario.html`, fotos e exames.
+   Ela se atualiza sozinha quando você salva paciente, admissão ou sessão no Mac, e ao abrir o
+   prontuário no Mac (o que foi feito pelo celular entra nessa hora). Como a pasta está no Drive, vai para a nuvem também.
+5. Opcional: no cadastro do paciente há o campo **Link da pasta no Drive**; com ele, aparece o botão
+   **Pasta no Drive** no prontuário do paciente.
+
+## Passo 6: primeiro uso
 
 1. **Materiais**: cadastre os materiais mais usados com o custo de cada um.
-2. **Pacientes > Novo paciente**: ao salvar, o sistema já abre a admissão.
-3. Na admissão salva, cadastre o **plano** (mensal, pacote ou avulso) e o valor.
-4. A cada atendimento: **+ Nova sessão**, com procedimento, fotos, avaliação da lesão, materiais e pagamento.
-   A aba **Cicatrização** do paciente monta sozinha a tabela e o gráfico PUSH.
-5. Toda semana: **Backup**, no Mac.
-
----
+2. **Financeiro > Simulador de curativos**: confira as taxas em *Configurações* (vieram da planilha
+   SIMULADOR DE CURATIVOS TESTE: Clinical Center 20%, cartão 2x 6%, 3x 8,4%, Simples 6%).
+3. **Pacientes > Novo paciente**: ao salvar, o sistema já abre a anamnese.
+4. Em **Avaliação da lesão**, o botão **Abrir avaliação de pé diabético** abre a parte do pé diabético
+   (abre sozinha quando a etiologia é "Pé diabético").
+5. A cada atendimento: **+ Nova sessão**. Quando o tratamento terminar: **Resumo > Dar alta**.
+   Se o paciente voltar: **Readmitir (novo episódio)**.
 
 ## Backup (importante)
 
@@ -132,7 +162,10 @@ uma pergunta, copie uma linha parecida e troque o `id` e o `rotulo`. Regras:
 | `js/formulario.js` | Desenha as folhas no visual da ficha; mapa do corpo; cálculo do PUSH |
 | `js/app.js` | Login, menu e navegação |
 | `js/banco.js` | Conexão com o Supabase e envio de fotos |
-| `js/telas/` | Cada tela (pacientes, paciente, admissão, evolução, materiais, financeiro, backup, impressão) |
+| `js/telas/` | Cada tela (pacientes, paciente, admissão, sessão, materiais, financeiro, simulador, backup, impressão) |
+| `js/pediabetico.js` | **Avaliação do pé diabético** (IWGDF 2023): campos e cálculos (risco, infecção, SINBAD, WIfI) |
+| `js/pasta.js` | Grava a pasta de cada paciente no Mac (Chrome/Edge) |
+| `js/telas/simulador.js` | Simulador de curativos (mesma lógica da planilha) |
 | `js/relatorio.js` | Monta o prontuário legível (impressão e backup) |
 | `sw.js`, `manifest.webmanifest`, `icones/` | O que faz virar app no celular |
 | `fontes/` | Montserrat (licença OFL), a fonte da ficha |

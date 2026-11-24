@@ -4,6 +4,7 @@ import { h, dataBR, dataHoraBR, moeda, numeroBR, avisar, mensagemErro, janela, h
 import { ETIOLOGIAS, SITUACOES_LESAO } from "../campos.js";
 import { calcularPush, areaLesao, mapaEl } from "../formulario.js";
 import { gradeFotos, painelFinanceiro, escolherFotos, campoTxt, campoSel, campoData, cabecalho, painelPaciente, abas, quadro, pilula } from "./componentes.js";
+import { calcularPeDiabetico, temPeDiabetico, textoResumoPeDiabetico } from "../pediabetico.js";
 
 const ABAS = [
   ["resumo", "Resumo"],
@@ -20,61 +21,82 @@ export async function telaPaciente(tela, id, aba = "resumo") {
   if (aba === "arquivos") aba = "documentos";
   const [p, admissoes] = await Promise.all([
     q(sb.from("pacientes").select("*").eq("id", id).single()),
-    q(sb.from("admissoes").select("id, data, dados, criado_por").eq("paciente_id", id).order("data", { ascending: false })),
+    q(sb.from("admissoes").select("id, data, dados, criado_por, tipo, alta_em, alta_motivo, criado_em").eq("paciente_id", id).order("data", { ascending: false }).order("criado_em", { ascending: false })),
   ]);
   const d = (admissoes[0] && admissoes[0].dados) || {};
+  // Pé diabético: usa a avaliação mais recente (sessão ou admissão)
+  const [ultPe] = await q(sb.from("evolucoes").select("avaliacao").eq("paciente_id", id).order("data", { ascending: false }).limit(20))
+    .then((l) => l.filter((x) => temPeDiabetico(x.avaliacao)).map((x) => x.avaliacao));
+  const pe = ultPe ? calcularPeDiabetico(ultPe) : temPeDiabetico(d) ? calcularPeDiabetico(d) : null;
   const alertas = [];
   if (d.alergias === "Sim") alertas.push("Alergia: " + (d.alergias_quais || "sim"));
   (d.medicamentos_atencao || []).forEach((m) => alertas.push(m));
   (d.doencas_quais || []).forEach((c) => alertas.push(c));
   (d.dispositivos || []).forEach((c) => alertas.push(c));
+  if (pe && pe.risco) alertas.push("Pé diabético: risco IWGDF " + pe.risco.cat);
+  if (pe && pe.infeccao && pe.infeccao.grau >= 3) alertas.push("Infecção IWGDF " + pe.infeccao.rotulo);
 
   tela.append(
     cabecalho({
       voltar: ["#/pacientes", "Pacientes"],
       subtitulo: p.situacao !== "em tratamento" ? "Situação: " + p.situacao : null,
       titulo: ["PRONTUÁRIO DO", "PACIENTE"],
-      acoes: h("a", { href: `#/paciente/${id}/evolucao/nova`, class: "botao botao-primario" }, "+ Nova sessão"),
+      acoes: h("div", { class: "acoes-form", style: { marginTop: 0 } },
+        p.pasta_link ? h("a", { href: p.pasta_link, target: "_blank", rel: "noopener", class: "botao botao-secundario" }, "Pasta no Drive") : null,
+        h("a", { href: `#/paciente/${id}/evolucao/nova`, class: "botao botao-primario" }, "+ Nova sessão")),
     }),
     painelPaciente(p, alertas.length ? h("div", { class: "alertas" }, alertas.map((a) => h("span", { class: "alerta" }, a))) : null),
     abas(ABAS.map(([k, t]) => [k, t, `#/paciente/${id}/${k}`]), aba),
   );
   const corpo = h("div", { class: "aba-corpo" });
   tela.append(corpo);
-  if (aba === "sessoes") await abaSessoes(corpo, p);
+  if (aba === "sessoes") await abaSessoes(corpo, p, admissoes);
   else if (aba === "cicatrizacao") await abaCicatrizacao(corpo, p, admissoes);
   else if (aba === "fotos") await abaFotos(corpo, p);
   else if (aba === "documentos") await abaDocumentos(corpo, p);
   else if (aba === "financeiro") corpo.append(await painelFinanceiro(id));
-  else await abaResumo(corpo, p, admissoes);
+  else await abaResumo(corpo, p, admissoes, pe);
 }
 
 // ---------- Resumo ----------
-async function abaResumo(corpo, p, admissoes) {
-  const [lesoes, ultima] = await Promise.all([
+async function abaResumo(corpo, p, admissoes, pe) {
+  const [lesoes, ultima, sessoesPorEpisodio] = await Promise.all([
     q(sb.from("lesoes").select("*").eq("paciente_id", p.id).order("criado_em")),
     q(sb.from("evolucoes").select("id, data, tipo, descricao, avaliacao").eq("paciente_id", p.id).order("data", { ascending: false }).limit(1)),
+    q(sb.from("evolucoes").select("admissao_id").eq("paciente_id", p.id)),
   ]);
   const adm = admissoes[0];
   const d = (adm && adm.dados) || {};
   const pushUlt = ultima[0] ? calcularPush(ultima[0].avaliacao) : null;
+  const contagem = {};
+  sessoesPorEpisodio.forEach((e) => (contagem[e.admissao_id] = (contagem[e.admissao_id] || 0) + 1));
+  const emAberto = adm && !adm.alta_em;
 
   corpo.append(
     h("div", { class: "dois-quadros" },
-      quadro("Admissão",
-        adm
-          ? h("div", null,
-              h("p", null, "Admitido em ", h("b", null, dataBR(adm.data)), " por " + (nomeDe(adm.criado_por) || "—")),
-              [d.lesao_etiologia, d.lesao_local].filter(Boolean).length ? h("p", null, [d.lesao_etiologia, d.lesao_local].filter(Boolean).join(" · ")) : null,
-              d.queixas ? h("p", { class: "texto-suave texto-corrido" }, d.queixas) : null,
-              d.lesao_mapa ? mapaEl("", d.lesao_mapa, false) : null,
-              h("div", { class: "acoes-form" },
-                h("a", { href: `#/paciente/${p.id}/admissao`, class: "botao botao-secundario botao-pequeno" }, "Nova admissão"),
-                h("a", { href: `#/paciente/${p.id}/admissao/${adm.id}`, class: "botao botao-primario botao-pequeno" }, "Abrir ficha")),
-              admissoes.length > 1 ? h("p", { class: "pequeno texto-suave" }, "Admissões anteriores: ",
-                admissoes.slice(1).map((a, i) => [i ? ", " : "", h("a", { href: `#/paciente/${p.id}/admissao/${a.id}` }, dataBR(a.data))])) : null)
-          : h("div", null, h("p", { class: "texto-suave" }, "Ainda não há ficha de anamnese."),
-              h("div", { class: "acoes-form" }, h("a", { class: "botao botao-primario botao-pequeno", href: `#/paciente/${p.id}/admissao` }, "Preencher anamnese")))),
+      h("div", { class: "folha-coluna" },
+        quadro("Episódios de tratamento",
+          admissoes.length
+            ? h("ul", { class: "lista-simples" }, admissoes.map((a) => h("li", null,
+                h("div", null,
+                  h("strong", null, (a.tipo === "readmissão" ? "Readmissão " : "Admissão ") + dataBR(a.data)),
+                  h("small", null, [a.alta_em ? "alta em " + dataBR(a.alta_em) + (a.alta_motivo ? " (" + a.alta_motivo + ")" : "") : "em tratamento",
+                    (contagem[a.id] || 0) + " sessão(ões)", nomeDe(a.criado_por)].filter(Boolean).join(" · "))),
+                h("div", { class: "acoes-linha" },
+                  !a.alta_em ? h("button", { type: "button", class: "botao-link", onclick: () => darAlta(p, a, lesoes) }, "Dar alta") : null,
+                  h("a", { href: `#/paciente/${p.id}/admissao/${a.id}`, class: "botao-link" }, "Abrir ficha")))))
+            : h("p", { class: "texto-suave" }, "Ainda não há ficha de anamnese."),
+          adm && d.queixas ? h("p", { class: "texto-suave texto-corrido pequeno" }, "Queixa atual: " + d.queixas) : null,
+          d.lesao_mapa ? mapaEl("", d.lesao_mapa, false) : null,
+          h("div", { class: "acoes-form" },
+            !adm ? h("a", { class: "botao botao-primario botao-pequeno", href: `#/paciente/${p.id}/admissao` }, "Preencher anamnese")
+              : h("a", { class: "botao " + (emAberto ? "botao-secundario" : "botao-primario") + " botao-pequeno", href: `#/paciente/${p.id}/admissao` }, "Readmitir (novo episódio)")),
+          adm ? h("p", { class: "pequeno texto-suave" }, "Um só prontuário por paciente. Cada volta ao tratamento é um novo episódio, com nova anamnese já preenchida com o histórico; as sessões ficam ligadas ao episódio.") : null,
+        ),
+        pe ? quadro("Pé diabético",
+          h("p", null, h("b", null, textoResumoPeDiabetico(pe))),
+          pe.risco ? h("p", { class: "pequeno texto-suave" }, "Rastreio do pé " + pe.risco.intervalo + " após a cicatrização.") : null) : null,
+      ),
       h("div", { class: "folha-coluna" },
         quadro("Lesões",
           lesoes.length
@@ -124,7 +146,7 @@ function editarLesao(pacienteId, l = { situacao: "em tratamento" }) {
 }
 
 // ---------- Controle de sessões ----------
-async function abaSessoes(corpo, p) {
+async function abaSessoes(corpo, p, admissoes = []) {
   const [evolucoes, lesoes, fotos] = await Promise.all([
     q(sb.from("evolucoes").select("*, evolucao_materiais(quantidade, custo_unitario, materiais(nome, unidade))").eq("paciente_id", p.id).order("data", { ascending: false })),
     q(sb.from("lesoes").select("id, nome").eq("paciente_id", p.id)),
@@ -132,7 +154,16 @@ async function abaSessoes(corpo, p) {
   ]);
   const nomeLesao = Object.fromEntries(lesoes.map((l) => [l.id, l.nome]));
   const linhas = [];
+  const episodio = Object.fromEntries(admissoes.map((a) => [a.id, a]));
+  let episodioAnterior;
   for (const e of evolucoes) {
+    if (admissoes.length > 1 && e.admissao_id !== episodioAnterior) {
+      episodioAnterior = e.admissao_id;
+      const a = episodio[e.admissao_id];
+      linhas.push(h("tr", { class: "linha-episodio" }, h("td", { colspan: 2 },
+        a ? (a.tipo === "readmissão" ? "Readmissão de " : "Admissão de ") + dataBR(a.data) + (a.alta_em ? " · alta em " + dataBR(a.alta_em) : " · em tratamento")
+          : "Sessões sem episódio")));
+    }
     const minhas = fotos.filter((f) => f.evolucao_id === e.id);
     const custo = e.evolucao_materiais.reduce((s, m) => s + m.quantidade * m.custo_unitario, 0);
     const pu = calcularPush(e.avaliacao);
@@ -141,7 +172,8 @@ async function abaSessoes(corpo, p) {
       h("td", { class: "col-data" }, h("b", null, dataBR(e.data)), h("div", { class: "pequeno texto-suave" }, new Date(e.data).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }))),
       h("td", null,
         h("div", { class: "sessao-meta" }, [e.tipo, nomeLesao[e.lesao_id], e.local_atendimento].filter(Boolean).join(" · "),
-          pu && pu.total != null ? h("span", { class: "push-selo" }, "PUSH " + pu.total) : null),
+          pu && pu.total != null ? h("span", { class: "push-selo" }, "PUSH " + pu.total) : null,
+          temPeDiabetico(e.avaliacao) ? h("span", { class: "push-selo" }, "SINBAD " + calcularPeDiabetico(e.avaliacao).sinbad.total) : null),
         h("div", { class: "sessao-texto" }, e.descricao),
         e.conduta || e.evolucao_materiais.length || areaLesao(e.avaliacao) != null || e.proximo_atendimento
           ? h("div", { class: "sessao-detalhes" },
@@ -304,4 +336,30 @@ async function abaDocumentos(corpo, p) {
     corpo.append(quadro("Arquivos do paciente",
       await gradeFotos(arquivos, { rotulo: (a) => dataBR(a.data) + (a.legenda ? " · " + a.legenda : ""), aoApagar: recarregar })));
   }
+}
+
+function darAlta(p, adm, lesoes) {
+  const emTratamento = lesoes.filter((l) => l.situacao === "em tratamento");
+  const f = h("form", null,
+    campoData("alta_em", "Data da alta", hojeISO()),
+    campoSel("alta_motivo", "Motivo", ["Cicatrização", "Melhora / seguimento em casa", "Encaminhamento", "Abandono", "Óbito", "Outro"].map((x) => [x, x]), "Cicatrização"),
+    emTratamento.length ? h("label", { class: "caixinha", style: { marginTop: "14px" } },
+      h("input", { type: "checkbox", name: "cicatrizar", checked: true }), h("span", { class: "quadrado" }),
+      h("span", { class: "texto" }, "Marcar como cicatrizadas: " + emTratamento.map((l) => l.nome).join(", "))) : null,
+    h("p", { class: "pequeno texto-suave" }, "Para emitir o termo de alta assinado, anexe-o depois na aba Documentos."),
+    h("div", { class: "acoes-form" }, h("button", { type: "submit", class: "botao botao-primario" }, "Confirmar alta")),
+  );
+  const { fechar } = janela("Alta do episódio", f);
+  f.addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    try {
+      const motivo = f.elements.alta_motivo.value;
+      await q(sb.from("admissoes").update({ alta_em: f.elements.alta_em.value || hojeISO(), alta_motivo: motivo }).eq("id", adm.id));
+      await q(sb.from("pacientes").update({ situacao: motivo === "Abandono" ? "inativo" : "alta" }).eq("id", p.id));
+      if (f.elements.cicatrizar && f.elements.cicatrizar.checked) {
+        for (const l of emTratamento) await q(sb.from("lesoes").update({ situacao: "cicatrizada" }).eq("id", l.id));
+      }
+      fechar(); avisar("Alta registrada."); recarregar();
+    } catch (e) { avisar(mensagemErro(e), "erro"); }
+  });
 }
