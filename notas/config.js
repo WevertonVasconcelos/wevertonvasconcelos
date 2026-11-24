@@ -5,11 +5,11 @@
 // vem das regras de segurança criadas pelo arquivo supabase/setup.sql.
 window.NOTAS_CONFIG = {
   // Ex.: "https://abcdefghijkl.supabase.co"
-  SUPABASE_URL: "",
+  SUPABASE_URL: "https://vtzgkrfnakwjgaqoogtj.supabase.co",
 
   // Chave "publishable" (sb_publishable_...) ou a chave "anon" antiga.
   // NUNCA coloque aqui a chave "secret" / "service_role".
-  SUPABASE_ANON_KEY: "",
+  SUPABASE_ANON_KEY: "sb_publishable_t4GHFnUNK-Qt0sN1-2llgQ__lVK-ydU",
 
   // O login é feito só com "usuário". Por trás, o Supabase precisa de um
   // e-mail, então o site transforma "weverton" em "weverton@notas.app".
