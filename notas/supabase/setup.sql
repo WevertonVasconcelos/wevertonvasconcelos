@@ -35,6 +35,11 @@ create trigger notas_marcar_atualizacao
   before update on public.notas
   for each row execute function public.notas_marcar_atualizacao();
 
+-- Só quem fez login pode usar a tabela (projetos novos do Supabase
+-- não liberam tabelas automaticamente)
+revoke all on public.notas from anon;
+grant select, insert, update, delete on public.notas to authenticated;
+
 -- Cada usuário só enxerga e altera as próprias notas
 alter table public.notas enable row level security;
 
