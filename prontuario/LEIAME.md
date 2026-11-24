@@ -71,7 +71,8 @@ Salve com **Commit changes**.
 1. **Materiais**: cadastre os materiais mais usados com o custo de cada um.
 2. **Pacientes > Novo paciente**: ao salvar, o sistema já abre a admissão.
 3. Na admissão salva, cadastre o **plano** (mensal, pacote ou avulso) e o valor.
-4. A cada atendimento: **+ Nova evolução**, com texto, fotos, materiais e pagamento.
+4. A cada atendimento: **+ Nova sessão**, com procedimento, fotos, avaliação da lesão, materiais e pagamento.
+   A aba **Cicatrização** do paciente monta sozinha a tabela e o gráfico PUSH.
 5. Toda semana: **Backup**, no Mac.
 
 ---
@@ -118,7 +119,7 @@ uma pergunta, copie uma linha parecida e troque o `id` e o `rotulo`. Regras:
 - **Não troque o `id`** de um campo que já tem dados (é por ele que o valor é guardado).
 - Tirar um campo da lista não apaga os dados antigos: eles continuam no banco e no backup.
 - Depois de mudar qualquer arquivo, aumente a versão em `sw.js`
-  (`prontuario-v1` → `prontuario-v2`) para os celulares pegarem a versão nova.
+  (ex.: `prontuario-v2` → `prontuario-v3`) para os celulares pegarem a versão nova.
 
 ## Arquivos
 
@@ -127,12 +128,14 @@ uma pergunta, copie uma linha parecida e troque o `id` e o `rotulo`. Regras:
 | `index.html` | Estrutura das telas |
 | `style.css` | Visual da marca |
 | `config.js` | **Onde vão as chaves do Supabase** |
-| `js/campos.js` | **Campos da admissão e da avaliação da lesão** |
+| `js/campos.js` | **Campos das folhas** (Anamnese, Avaliação da Lesão, Plano de Cuidados), na mesma ordem do papel |
+| `js/formulario.js` | Desenha as folhas no visual da ficha; mapa do corpo; cálculo do PUSH |
 | `js/app.js` | Login, menu e navegação |
 | `js/banco.js` | Conexão com o Supabase e envio de fotos |
 | `js/telas/` | Cada tela (pacientes, paciente, admissão, evolução, materiais, financeiro, backup, impressão) |
 | `js/relatorio.js` | Monta o prontuário legível (impressão e backup) |
 | `sw.js`, `manifest.webmanifest`, `icones/` | O que faz virar app no celular |
-| `fontes/` | Cormorant Garamond e Montserrat (licença OFL) |
+| `fontes/` | Montserrat (licença OFL), a fonte da ficha |
+| `icones/logo.png`, `icones/corpo/` | Logo e figuras do corpo tirados da ficha de atendimento |
 | `vendor/supabase.js` | Biblioteca oficial do Supabase, guardada aqui |
 | `supabase/setup.sql` | Cria tabelas, segurança, histórico e a pasta de fotos |

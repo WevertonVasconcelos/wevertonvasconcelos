@@ -8,13 +8,13 @@ e a pasta de fotos no Google Fotos.
 
 | Pedido | Como fica no sistema |
 |---|---|
-| Ficha de admissão com muitas variáveis | Tela **Admissão** em seções que abrem e fecham: queixa e história, comorbidades, medicações e alergias, hábitos/mobilidade/dispositivos, sinais vitais, **exames laboratoriais**, fatores que afetam a cicatrização, avaliação inicial da lesão e plano de cuidados. Os campos vieram da `formulario_clinico.html`. |
-| Evoluções com texto | Tela **Nova evolução**: data, lesão, tipo, local, texto livre, conduta e próximo atendimento. |
+| Ficha de admissão com muitas variáveis | Tela **Admissão** igual às folhas de papel da Mariana (`DOCUMENTOS_PARA_ATENDIMENTOS.pdf`), em 3 abas: **Ficha de Anamnese** (mesmas perguntas Sim/Não, dispositivos, mobilidade, Peso/Altura/IMC/PA/Glicemia/SPO2/FC/FR/Temperatura, fatores de cicatrização) + **exames laboratoriais**; **Avaliação da Lesão** (mapa do corpo para tocar no local, medidas, Tipo, Dor, Tecido, Bordas, Tempo, Perilesão, Exsudato, Pele, Observações); **Plano de Cuidados** (a mesma tabela de 12 linhas + laser/adjuvantes). |
+| Evoluções com texto | Tela **Nova sessão**: data, lesão, tipo, local, procedimento, conduta e próximo atendimento. A lista fica no **Controle de sessões** (tabela DATA / PROCEDIMENTO, como na folha). |
 | Evoluções com foto | Câmera direto na evolução. As fotos são reduzidas antes de enviar e ficam numa **linha do tempo por lesão** (aba Fotos), com a tabela de medidas e a variação da área. |
-| Documentar a evolução da lesão | Avaliação padronizada em cada evolução (medidas, % de tecido, exsudato, bordas, perilesão, dor, sinais de infecção) e cálculo automático da área. |
+| Documentar a evolução da lesão | A mesma folha de Avaliação da Lesão em cada sessão. A aba **Cicatrização** reproduz a folha de papel: tabela DATA / COMP × LARG / EXSUDATO / TIPO DE TECIDO / TOTAL e o gráfico **TOTAL PUSH** (0 a 17), calculados sozinhos. |
 | Materiais e custo de material | Catálogo de **Materiais** com custo unitário. Cada evolução lança os materiais usados e o sistema soma o custo daquele atendimento. |
 | Valor de sessões e planos mensais | **Planos** (mensal, pacote, avulso) cadastrados na própria ficha de admissão, mais **pagamentos** recebidos. A tela **Financeiro** mostra o mês: recebido, custo de material, resultado e os números por paciente. |
-| Layout com a nossa marca | Logo, ouro `#B89A6A`, creme, carvão, Cormorant Garamond + Montserrat (o mesmo padrão dos documentos institucionais). |
+| Layout com a nossa marca | Copiado da ficha de atendimento: logo dourado e ameixa, painel bege `#D6CBB2` com linhas, quadros com título na borda, caixinhas quadradas, tabelas com cabeçalho dourado `#BBA982`, títulos "FICHA DE **ANAMNESE**", arcos bege nos cantos e fonte Montserrat. O PDF impresso sai nas mesmas folhas. |
 | Não perder nada | 1) Banco na nuvem (Supabase). 2) Registro clínico **não pode ser apagado**, só corrigido, e toda versão antiga fica no **histórico**. 3) **Backup** em .zip para o Mac/Drive, com prontuário legível de cada paciente + fotos + dados. |
 | Usar no celular | **PWA**: abre no navegador e pode ser "instalado" na tela de início como um app. |
 
@@ -56,7 +56,9 @@ e a pasta de fotos no Google Fotos.
 - [x] Login, saída automática por inatividade, "sair de todos os aparelhos"
 - [x] Lista de pacientes com busca e filtro por situação
 - [x] Cadastro do paciente
-- [x] Admissão completa e readmissão
+- [x] Admissão nas 3 folhas da Mariana (Anamnese, Avaliação da Lesão, Plano de Cuidados) e readmissão
+- [x] Mapa do corpo para marcar o local da lesão
+- [x] Escala PUSH calculada e folha de Cicatrização com gráfico
 - [x] Lesões por paciente
 - [x] Evolução com texto, avaliação, fotos, materiais e pagamento
 - [x] Linha do tempo das evoluções, com autor e marca de "editado"
@@ -75,13 +77,18 @@ e a pasta de fotos no Google Fotos.
 1. **Colocar no ar e usar 2 semanas em paralelo** com o Consultório.me. Anotar o que falta.
 2. **Ajustar os campos** com a Mariana: tudo fica em `js/campos.js`, numa lista fácil de editar.
 3. **Migrar os pacientes ativos** do Consultório.me: exportar o que der e lançar as fotos antigas do Google Fotos na aba Fotos de cada paciente, com a data original.
-4. **Comparar fotos lado a lado** (antes × depois) e **gráfico da área** da lesão.
-5. **Agenda**: usar o campo "próximo atendimento" para montar a lista do dia.
-6. **TCLE e autorização de imagem** assinados na tela (hoje dá para anexar o PDF/foto do papel assinado).
-7. **Backup automático** semanal para o Google Drive, ou o plano Pro do Supabase (US$ 25/mês, com backup diário).
-8. **Controle de estoque** dos materiais, se fizer sentido.
+4. **Comparar fotos lado a lado** (antes × depois).
+5. **Termos prontos para imprimir** com os dados do paciente já preenchidos (contratação, recusa, alta, uso de imagem), a partir das páginas 6 a 11 do PDF da Mariana.
+6. **Agenda**: usar o campo "próximo atendimento" para montar a lista do dia.
+7. **TCLE e autorização de imagem** assinados na tela (hoje dá para anexar o PDF/foto do papel assinado).
+8. **Backup automático** semanal para o Google Drive, ou o plano Pro do Supabase (US$ 25/mês, com backup diário).
+9. **Controle de estoque** dos materiais, se fizer sentido.
 
 ## 5. Cuidados legais (conferir com a assessoria)
+
+- **Escala PUSH**: o cálculo segue a PUSH 3.0 (área 0 a 10, exsudato 0 a 3, tecido 0 a 4).
+  Como a ficha permite marcar mais de uma opção, o sistema usa a maior quantidade de
+  exsudato e o pior tecido marcados. **[CONFERIR com a Mariana]**
 
 - **LGPD**: dado de saúde é dado sensível. O sistema é fechado (só a equipe), mas
   é preciso ter o consentimento do paciente para o tratamento dos dados e das

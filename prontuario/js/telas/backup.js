@@ -2,6 +2,8 @@
 import { sb, q, sessao, baixarArquivo } from "../banco.js";
 import { h, criarZip, baixar, avisar, mensagemErro, nomeArquivoSeguro, hojeISO, dataHoraBR } from "../util.js";
 import { htmlProntuario, buscarDadosProntuario, separarPorPaciente } from "../relatorio.js";
+import { cabecalho, quadro } from "./componentes.js";
+import { FIGURAS_CORPO } from "../campos.js";
 
 const CHAVE = "prontuario.ultimoBackup";
 const DIAS_LEMBRETE = 7;
@@ -47,20 +49,20 @@ export async function telaBackup(tela) {
   ];
 
   tela.append(
-    h("div", { class: "cabecalho-tela" }, h("div", null, h("p", { class: "sobretitulo" }, "Segurança"), h("h1", null, "Backup"))),
-    h("div", { class: "cartao" },
+    cabecalho({ titulo: ["CÓPIA DE", "SEGURANÇA"] }),
+    quadro("Fazer backup",
       h("p", null, u ? "Último backup neste aparelho: " + dataHoraBR(u) : "Nenhum backup feito neste aparelho ainda."),
       h("div", { class: "pilha-botoes" }, botoes),
       barra,
       progresso,
     ),
-    h("div", { class: "cartao" },
-      h("h3", null, "O que vem no arquivo"),
+    quadro("O que vem no arquivo",
       h("ul", null,
         h("li", null, "Uma pasta por paciente com o ", h("b", null, "prontuario.html"), " (abre em qualquer navegador, mesmo sem internet) e todas as fotos e exames."),
         h("li", null, "A pasta ", h("b", null, "dados"), " com tudo em formato JSON (para restaurar ou migrar) e planilhas CSV do financeiro."),
       ),
-      h("h3", null, "Rotina sugerida"),
+    ),
+    quadro("Rotina sugerida",
       h("ol", null,
         h("li", null, "Uma vez por semana, no Mac, faça o backup completo."),
         h("li", null, "Mova o .zip para uma pasta do ", h("b", null, "Google Drive para computador"), " (ou iCloud Drive). Assim fica no Mac ", h("i", null, "e"), " na nuvem."),
@@ -106,11 +108,13 @@ async function gerarBackup(comArquivos, informar) {
     ...tudo.evolucoes.map((e) => [e.data.slice(0, 10), nomeP[e.paciente_id], e.tipo, e.local_atendimento,
       e.evolucao_materiais.reduce((s, m) => s + m.quantidade * m.custo_unitario, 0).toFixed(2).replace(".", ",")])]) });
 
-  // Logo para o prontuário legível
-  try {
-    const r = await fetch("icones/logo.jpg");
-    if (r.ok) arquivosZip.push({ nome: "logo.jpg", dados: new Uint8Array(await r.arrayBuffer()) });
-  } catch (e) { /* sem logo, segue */ }
+  // Logo e figuras do corpo, para o prontuário legível abrir sem internet
+  for (const img of ["icones/logo.png", "fontes/Montserrat.woff2", ...FIGURAS_CORPO.map((f) => f.arquivo)]) {
+    try {
+      const r = await fetch(img);
+      if (r.ok) arquivosZip.push({ nome: img, dados: new Uint8Array(await r.arrayBuffer()) });
+    } catch (e) { /* sem a imagem, segue */ }
+  }
 
   // Pasta por paciente
   const pastaDe = {};
@@ -122,7 +126,7 @@ async function gerarBackup(comArquivos, informar) {
   };
   for (const p of tudo.pacientes) {
     const dados = separarPorPaciente(tudo, p, equipe);
-    const html = htmlProntuario(dados, { srcArquivo: nomeNoZip, logo: "../../logo.jpg", geradoPor: sessao.membro && sessao.membro.nome });
+    const html = htmlProntuario(dados, { srcArquivo: nomeNoZip, base: "../../", geradoPor: sessao.membro && sessao.membro.nome });
     arquivosZip.push({ nome: pastaDe[p.id] + "/prontuario.html", dados: html });
   }
 

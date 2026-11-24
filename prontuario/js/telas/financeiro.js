@@ -2,7 +2,7 @@
 import { sb, q } from "../banco.js";
 import { h, moeda, dataBR } from "../util.js";
 import { TIPOS_PLANO } from "../campos.js";
-import { numero } from "./componentes.js";
+import { numero, cabecalho, pilula } from "./componentes.js";
 
 let mesEscolhido = null;
 
@@ -43,15 +43,12 @@ export async function telaFinanceiro(tela) {
   const linhas = Object.values(porPaciente).sort((a, b) => (nome[a.id] || "").localeCompare(nome[b.id] || ""));
 
   tela.append(
-    h("div", { class: "cabecalho-tela" },
-      h("div", null, h("p", { class: "sobretitulo" }, "Gestão"), h("h1", null, "Financeiro")),
-      h("input", {
+    cabecalho({ titulo: ["CONTROLE", "FINANCEIRO"], acoes: h("input", {
         type: "month", class: "seletor-mes", value: mesEscolhido, "aria-label": "Mês",
         onchange: (e) => { if (e.target.value) { mesEscolhido = e.target.value; window.dispatchEvent(new HashChangeEvent("hashchange")); } },
-      }),
-    ),
+      }) }),
     h("div", { class: "numeros" },
-      numero("Recebido no mês", moeda(recebido)),
+      numero("Recebido no mês", moeda(recebido), "destaque"),
       numero("Custo de material", moeda(custoTotal)),
       numero("Resultado", moeda(recebido - custoTotal), recebido - custoTotal < 0 ? "negativo" : ""),
       numero("Atendimentos", String(evolucoes.length)),
@@ -60,10 +57,10 @@ export async function telaFinanceiro(tela) {
       "Resultado = recebido − material. Não inclui deslocamento, impostos, aluguel nem pró-labore. ",
       previstoMensal ? "Planos mensais ativos somam " + moeda(previstoMensal) + "/mês." : ""),
 
-    h("div", { class: "cartao sem-padding" },
-      h("h3", { class: "titulo-tabela" }, "Por paciente"),
+    h("div", null,
+      h("div", { class: "linha-pilula" }, pilula("Por paciente")),
       linhas.length
-        ? h("div", { class: "rolagem" }, h("table", { class: "tabela" },
+        ? h("div", { class: "rolagem" }, h("table", { class: "tabela-ficha" },
             h("thead", null, h("tr", null, h("th", null, "Paciente"), h("th", { class: "num" }, "Atend."), h("th", { class: "num" }, "Material"), h("th", { class: "num" }, "Recebido"), h("th", { class: "num" }, "Resultado"))),
             h("tbody", null, linhas.map((l) =>
               h("tr", null,
@@ -77,10 +74,10 @@ export async function telaFinanceiro(tela) {
         : h("p", { class: "vazio" }, "Sem movimento neste mês."),
     ),
 
-    h("div", { class: "cartao sem-padding" },
-      h("h3", { class: "titulo-tabela" }, "Pagamentos do mês"),
+    h("div", null,
+      h("div", { class: "linha-pilula" }, pilula("Pagamentos do mês")),
       pagamentos.length
-        ? h("div", { class: "rolagem" }, h("table", { class: "tabela" },
+        ? h("div", { class: "rolagem" }, h("table", { class: "tabela-ficha" },
             h("thead", null, h("tr", null, h("th", null, "Data"), h("th", null, "Paciente"), h("th", null, "Forma"), h("th", { class: "num" }, "Valor"))),
             h("tbody", null, pagamentos.map((p) =>
               h("tr", null, h("td", null, dataBR(p.data)), h("td", null, nome[p.paciente_id] || "—"), h("td", null, p.forma || ""), h("td", { class: "num" }, moeda(p.valor))))),
@@ -89,9 +86,9 @@ export async function telaFinanceiro(tela) {
     ),
 
     planos.length
-      ? h("div", { class: "cartao sem-padding" },
-          h("h3", { class: "titulo-tabela" }, "Planos ativos"),
-          h("div", { class: "rolagem" }, h("table", { class: "tabela" },
+      ? h("div", null,
+          h("div", { class: "linha-pilula" }, pilula("Planos ativos")),
+          h("div", { class: "rolagem" }, h("table", { class: "tabela-ficha" },
             h("thead", null, h("tr", null, h("th", null, "Paciente"), h("th", null, "Plano"), h("th", null, "Desde"), h("th", { class: "num" }, "Valor"))),
             h("tbody", null, planos.map((p) =>
               h("tr", null,

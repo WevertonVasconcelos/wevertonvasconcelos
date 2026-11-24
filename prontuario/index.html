@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="robots" content="noindex, nofollow">
-  <meta name="theme-color" content="#F5F0EB">
+  <meta name="theme-color" content="#FFFFFF">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Prontuário VV">
@@ -16,31 +16,39 @@
 </head>
 <body>
 
+  <!-- Arcos bege dos cantos, iguais aos da ficha de papel -->
+  <div class="enfeite" aria-hidden="true">
+    <svg class="arco-topo" viewBox="0 0 300 80"><path d="M60 78 C120 30 210 6 300 4 L300 34 C220 30 140 46 60 78 Z"/></svg>
+    <svg class="arco-esq" viewBox="0 0 380 300"><path d="M0 0 C10 150 110 260 300 300 L0 300 Z"/></svg>
+    <svg class="arco-dir" viewBox="0 0 240 260"><path d="M240 0 L240 260 L60 260 C150 220 220 140 240 0 Z"/></svg>
+  </div>
+
   <!-- Falta configurar o Supabase -->
   <main id="tela-config" class="tela-centro" hidden>
-    <div class="cartao cartao-estreito">
-      <img src="icones/logo.jpg" alt="Véras Vasconcelos Medicina e Saúde" class="logo-login">
-      <h1>Quase lá</h1>
+    <div class="folha-login">
+      <img src="icones/logo.png" alt="Véras Vasconcelos Medicina e Saúde" class="logo-login">
+      <h1 class="titulo-ficha">Quase <b>lá</b></h1>
       <p>O prontuário ainda não está ligado ao banco de dados. Siga o <b>LEIAME.md</b> (passo 2) e preencha o arquivo <code>config.js</code>.</p>
     </div>
   </main>
 
   <!-- Login -->
   <main id="tela-login" class="tela-centro" hidden>
-    <form id="form-login" class="cartao cartao-estreito" autocomplete="on">
-      <img src="icones/logo.jpg" alt="Véras Vasconcelos Medicina e Saúde" class="logo-login">
-      <p class="sobretitulo centro">Prontuário eletrônico</p>
+    <form id="form-login" class="folha-login" autocomplete="on">
+      <img src="icones/logo.png" alt="Véras Vasconcelos Medicina e Saúde" class="logo-login">
+      <h1 class="titulo-ficha">Prontuário <b>eletrônico</b></h1>
       <div class="campo">
-        <label for="login-usuario">Usuário</label>
-        <input id="login-usuario" name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required>
+        <label for="login-usuario" class="rotulo-forte">Usuário</label>
+        <input id="login-usuario" name="username" type="text" class="caixa-entrada" autocomplete="username" autocapitalize="none" spellcheck="false" required>
       </div>
       <div class="campo">
-        <label for="login-senha">Senha</label>
-        <input id="login-senha" name="password" type="password" autocomplete="current-password" required>
+        <label for="login-senha" class="rotulo-forte">Senha</label>
+        <input id="login-senha" name="password" type="password" class="caixa-entrada" autocomplete="current-password" required>
       </div>
-      <label class="chip chip-largo">
+      <label class="caixinha" style="margin: 14px 0">
         <input id="login-lembrar" type="checkbox">
-        <span>Manter conectado neste aparelho (só no seu celular ou computador pessoal)</span>
+        <span class="quadrado" aria-hidden="true"></span>
+        <span class="texto">Manter conectado neste aparelho (só no seu celular ou computador pessoal)</span>
       </label>
       <p id="login-erro" class="erro" role="alert" hidden></p>
       <button id="login-botao" type="submit" class="botao botao-primario botao-largo">Entrar</button>
@@ -49,9 +57,10 @@
 
   <!-- Usuário fora da equipe -->
   <main id="tela-sem-equipe" class="tela-centro" hidden>
-    <div class="cartao cartao-estreito">
-      <h1>Acesso ainda não liberado</h1>
-      <p>O usuário <b id="sem-equipe-email"></b> entrou, mas não está na lista da equipe. Peça para incluir (LEIAME.md, passo 1.7).</p>
+    <div class="folha-login">
+      <img src="icones/logo.png" alt="Véras Vasconcelos Medicina e Saúde" class="logo-login">
+      <h1 class="titulo-ficha">Acesso <b>não liberado</b></h1>
+      <p>O usuário <b id="sem-equipe-email"></b> entrou, mas não está na lista da equipe. Peça para incluir (LEIAME.md, passo 1.6).</p>
       <button id="botao-sair-2" type="button" class="botao botao-secundario">Sair</button>
     </div>
   </main>
@@ -59,15 +68,16 @@
   <!-- App -->
   <div id="tela-app" hidden>
     <header class="topo">
-      <a href="#/pacientes" class="marca" aria-label="Início">
-        <img src="icones/icone-192.png" alt="" width="36" height="36">
-        <span><b>Véras Vasconcelos</b><small>Prontuário</small></span>
-      </a>
+      <a href="#/pacientes" class="marca" aria-label="Início"><img src="icones/logo.png" alt="Véras Vasconcelos Medicina e Saúde"></a>
       <nav class="menu-principal" aria-label="Menu">
-        <a href="#/pacientes" data-menu="pacientes"><span aria-hidden="true">👤</span>Pacientes</a>
-        <a href="#/financeiro" data-menu="financeiro"><span aria-hidden="true">💰</span>Financeiro</a>
-        <a href="#/materiais" data-menu="materiais"><span aria-hidden="true">🩹</span>Materiais</a>
-        <a href="#/backup" data-menu="backup"><span aria-hidden="true">💾</span>Backup</a>
+        <a href="#/pacientes" data-menu="pacientes">
+          <svg class="icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>Pacientes</a>
+        <a href="#/financeiro" data-menu="financeiro">
+          <svg class="icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h3"/></svg>Financeiro</a>
+        <a href="#/materiais" data-menu="materiais">
+          <svg class="icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="8" width="18" height="8" rx="4" transform="rotate(-45 12 12)"/><path d="M10 10h.01M14 14h.01M12 12h.01"/></svg>Materiais</a>
+        <a href="#/backup" data-menu="backup">
+          <svg class="icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 4v11M7 10l5 5 5-5M4 20h16"/></svg>Backup</a>
       </nav>
       <details class="menu-usuario">
         <summary aria-label="Conta"><span id="topo-usuario"></span> ▾</summary>

@@ -1,20 +1,17 @@
 // Catálogo de materiais com custo unitário.
 import { sb, q } from "../banco.js";
 import { h, moeda, numeroOuNulo, avisar, mensagemErro, janela, confirmar } from "../util.js";
-import { campoTxt } from "./componentes.js";
+import { campoTxt, cabecalho } from "./componentes.js";
 
 export async function telaMateriais(tela) {
   const materiais = await q(sb.from("materiais").select("*").order("ativo", { ascending: false }).order("nome"));
 
   tela.append(
-    h("div", { class: "cabecalho-tela" },
-      h("div", null, h("p", { class: "sobretitulo" }, "Cadastro"), h("h1", null, "Materiais")),
-      h("button", { type: "button", class: "botao botao-primario", onclick: () => editar() }, "+ Material"),
-    ),
+    cabecalho({ titulo: ["CUSTO DE", "MATERIAIS"], acoes: h("button", { type: "button", class: "botao botao-primario", onclick: () => editar() }, "+ Material") }),
     h("p", { class: "texto-suave" }, "O custo informado aqui é usado para calcular o gasto de cada atendimento. Se o preço mudar, edite: os atendimentos antigos mantêm o custo da época."),
     materiais.length
-      ? h("div", { class: "cartao sem-padding" },
-          h("table", { class: "tabela" },
+      ? h("div", { class: "rolagem" },
+          h("table", { class: "tabela-ficha" },
             h("thead", null, h("tr", null, h("th", null, "Material"), h("th", null, "Unidade"), h("th", { class: "num" }, "Custo"), h("th", null, ""))),
             h("tbody", null, materiais.map((m) =>
               h("tr", { class: m.ativo ? "" : "inativo" },
@@ -24,16 +21,16 @@ export async function telaMateriais(tela) {
                 h("td", { class: "num" }, h("button", { type: "button", class: "botao-link", onclick: () => editar(m) }, "Editar")),
               ))),
           ))
-      : h("div", { class: "cartao vazio" }, "Nenhum material cadastrado. Comece pelos que a Mariana mais usa (soro, gaze, coberturas, ataduras…)."),
+      : h("p", { class: "vazio" }, "Nenhum material cadastrado. Comece pelos que a Mariana mais usa (soro, gaze, coberturas, ataduras…)."),
   );
 
   function editar(m = { unidade: "un", ativo: true }) {
-    const f = h("form", { class: "grade-campos" },
-      campoTxt("nome", "Nome *", m.nome, "", null, "Ex.: Hidrofibra com prata 10x10"),
-      campoTxt("unidade", "Unidade", m.unidade, "meia", null, "un, pacote, ml, rolo…"),
-      campoTxt("custo_unitario", "Custo por unidade (R$)", m.custo_unitario, "meia", "decimal"),
-      campoTxt("observacoes", "Observações", m.observacoes, "", null, "Fornecedor, marca…"),
-      h("label", { class: "chip" }, h("input", { type: "checkbox", name: "ativo", checked: m.ativo }), h("span", null, "Em uso")),
+    const f = h("form", null,
+      campoTxt("nome", "Nome *", m.nome, null, "Ex.: Hidrofibra com prata 10x10"),
+      campoTxt("unidade", "Unidade", m.unidade, null, "un, pacote, ml, rolo…"),
+      campoTxt("custo_unitario", "Custo por unidade (R$)", m.custo_unitario, "decimal"),
+      campoTxt("observacoes", "Observações", m.observacoes, null, "Fornecedor, marca…"),
+      h("label", { class: "caixinha", style: { marginTop: "14px" } }, h("input", { type: "checkbox", name: "ativo", checked: m.ativo }), h("span", { class: "quadrado" }), h("span", { class: "texto" }, "Em uso")),
       h("div", { class: "acoes-form" },
         m.id ? h("button", { type: "button", class: "botao botao-perigo-texto", onclick: apagar }, "Apagar") : null,
         h("button", { type: "submit", class: "botao botao-primario" }, "Salvar"),

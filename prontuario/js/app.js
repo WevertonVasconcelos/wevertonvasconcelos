@@ -18,6 +18,7 @@ const telas = {
 };
 function mostrar(nome) {
   Object.entries(telas).forEach(([k, el]) => (el.hidden = k !== nome));
+  document.body.classList.toggle("modo-app", nome === "app");
 }
 
 // ---------- Rotas ----------
@@ -67,7 +68,7 @@ async function rotear() {
     } catch (erro) {
       console.error(erro);
       if (minha === renderizando)
-        main.replaceChildren(h("div", { class: "cartao erro-tela" },
+        main.replaceChildren(h("fieldset", { class: "caixa" },
           h("h2", null, "Não deu para abrir esta tela"),
           h("p", null, mensagemErro(erro)),
           h("button", { class: "botao botao-secundario", onclick: rotear }, "Tentar de novo"),
@@ -75,7 +76,7 @@ async function rotear() {
     }
     return;
   }
-  main.replaceChildren(h("div", { class: "cartao" }, h("p", null, "Página não encontrada. "), h("a", { href: "#/pacientes" }, "Ir para pacientes")));
+  main.replaceChildren(h("div", { class: "vazio" }, h("p", null, "Página não encontrada. "), h("a", { href: "#/pacientes" }, "Ir para pacientes")));
 }
 
 window.addEventListener("hashchange", rotear);
