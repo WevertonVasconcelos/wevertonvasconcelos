@@ -1,7 +1,7 @@
 // Admissão: Ficha de Anamnese + Avaliação da Lesão + Plano de Cuidados (as folhas da Mariana).
 import { sb, q, sessao, nomeDe } from "../banco.js";
 import { h, hojeISO, dataBR, avisar, mensagemErro, edicao } from "../util.js";
-import { FOLHAS_ADMISSAO, ANAMNESE, AVALIACAO, PLANO_CUIDADOS, camposDe } from "../campos.js";
+import { FOLHAS_ADMISSAO, ANAMNESE, AVALIACAO, PLANO_CUIDADOS, camposDe, ASSINATURA } from "../campos.js";
 import { folhaEl, lerCampos, calcularPush, textoPush, tituloFicha } from "../formulario.js";
 import { painelFinanceiro, painelPaciente, abas } from "./componentes.js";
 import { blocoPeDiabetico, CAMPOS_PE_DIABETICO } from "../pediabetico.js";
@@ -37,11 +37,9 @@ export async function telaAdmissao(tela, pacienteId, admissaoId) {
   abaAtual = continuarNaAba || "anamnese";
   continuarNaAba = null;
 
-  const autor = adm.id ? nomeDe(adm.criado_por) : sessao.membro && sessao.membro.nome;
-  const registro = adm.id ? (sessao.equipe.find((m) => m.user_id === adm.criado_por) || {}).registro : sessao.membro && sessao.membro.registro;
   const assinatura = () => h("p", { class: "assinatura-ficha" },
     h("span", null, "Data: ", h("b", null, dataBR(form.elements.data_admissao.value || adm.data))),
-    h("span", null, "Assinatura: ", h("b", null, [autor, registro].filter(Boolean).join(" · "))));
+    h("span", null, "Assinatura: ", h("b", null, ASSINATURA)));
 
   const pushEl = h("p", { class: "resumo-push" });
   const criarLesao = !admissaoId && !lesoes.length

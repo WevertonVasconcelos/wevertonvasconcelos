@@ -1,7 +1,7 @@
 // Gera o prontuário completo em HTML, no formato das folhas de atendimento
 // (para imprimir/salvar PDF e para o backup).
 import { escaparHTML as e, dataBR, dataHoraBR, idade, numeroBR, moeda } from "./util.js";
-import { ANAMNESE, AVALIACAO, PLANO_CUIDADOS, FIGURAS_CORPO, OMITIR_NA_EVOLUCAO } from "./campos.js";
+import { ANAMNESE, AVALIACAO, PLANO_CUIDADOS, FIGURAS_CORPO, OMITIR_NA_EVOLUCAO, ASSINATURA } from "./campos.js";
 import { valorTexto, areaLesao, calcularPush } from "./formulario.js";
 import { PE_DIABETICO, temPeDiabetico, calcularPeDiabetico, textoResumoPeDiabetico } from "./pediabetico.js";
 
@@ -10,7 +10,7 @@ import { PE_DIABETICO, temPeDiabetico, calcularPeDiabetico, textoResumoPeDiabeti
 export function htmlProntuario(dados, { srcArquivo, base = "", geradoPor }) {
   const { paciente: p, admissoes, lesoes, evolucoes, arquivos, equipe } = dados;
   const membro = (id) => equipe.find((m) => m.user_id === id) || {};
-  const carimbo = (id) => [membro(id).nome, membro(id).registro].filter(Boolean).join(" · ");
+  const carimbo = () => ASSINATURA;
   const nomeLesao = Object.fromEntries(lesoes.map((l) => [l.id, l.nome]));
   const anos = idade(p.data_nascimento);
   const imagem = (a) => (a.tipo_mime || "").startsWith("image/");
@@ -40,13 +40,16 @@ export function htmlProntuario(dados, { srcArquivo, base = "", geradoPor }) {
   function folha(f, v, omitir) {
     const cols = f.colunas.map((col) => `<div class="col">${respostas(col, v, omitir)}</div>`).join("");
     const rod = f.rodape ? respostas(f.rodape, v, omitir) : "";
-    return `<div class="colunas${f.colunas.length > 1 ? " duas" : ""}">${cols}</div>${rod}`;
+    const topo = f.topo ? respostas(f.topo, v, omitir) : "";
+    return `${topo}<div class="colunas${f.colunas.length > 1 ? " duas" : ""}">${cols}</div>${rod}`;
   }
   function mapa(marcas) {
-    return `<div class="mapa">${FIGURAS_CORPO.map((fig) => {
+    const figs = FIGURAS_CORPO.filter((fig) => marcas.some((m) => m.f === fig.id));
+    if (!figs.length) return "";
+    return `<div class="mapa">${figs.map((fig) => {
       const pts = marcas.map((m, i) => ({ ...m, n: i + 1 })).filter((m) => m.f === fig.id);
-      return `<div class="fig fig-${fig.id}"><img src="${e(base + fig.arquivo)}" alt="">${pts.map((m) =>
-        `<span style="left:${m.x * 100}%;top:${m.y * 100}%">${m.n}</span>`).join("")}</div>`;
+      return `<figure class="fig fig-${fig.grupo}"><div class="fig-img"><img src="${e(base + fig.arquivo)}" alt="">${pts.map((m) =>
+        `<span style="left:${m.x * 100}%;top:${m.y * 100}%">${m.n}</span>`).join("")}</div><figcaption>${e(fig.nome)}</figcaption></figure>`;
     }).join("")}</div>`;
   }
   const painel = `<div class="painel">
@@ -121,8 +124,9 @@ export function htmlProntuario(dados, { srcArquivo, base = "", geradoPor }) {
   table.plano th{width:34%;text-transform:uppercase;font-size:10.5px;color:#3F2140;font-weight:700;text-align:center;vertical-align:middle}
   table.plano td{white-space:pre-wrap}
   .mapa{display:flex;flex-wrap:wrap;gap:6px;align-items:flex-end;margin:4px 0}
-  .fig{position:relative}.fig img{display:block;width:100%}
-  .fig-corpo{width:100%}.fig-perna,.fig-pe-plantar{width:30%}.fig-pe-lateral{width:24%}
+  .fig{margin:0;text-align:center}.fig-img{position:relative;display:inline-block}.fig img{display:block;height:100%}
+  .fig-perna .fig-img{height:230px}.fig-pe .fig-img{height:150px}.fig-pe-perfil .fig-img{height:90px}
+  .fig figcaption{font-size:10px;color:#77736D}
   .fig span{position:absolute;transform:translate(-50%,-50%);width:18px;height:18px;border-radius:50%;background:#3F2140;color:#fff;font-size:10px;font-weight:700;text-align:center;line-height:18px;border:1.5px solid #fff}
   .assina{text-align:center;margin-top:14px;font-size:11.5px}
   .push{font-weight:700;color:#3F2140}

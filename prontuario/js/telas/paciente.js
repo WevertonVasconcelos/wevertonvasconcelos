@@ -3,7 +3,7 @@ import { sb, q, nomeDe, enviarArquivo, sessao, baixarArquivo } from "../banco.js
 import { gerarPdfProntuario, nomePdf } from "../pdf.js";
 import { buscarDadosProntuario, separarPorPaciente } from "../relatorio.js";
 import { h, dataBR, dataHoraBR, moeda, numeroBR, avisar, mensagemErro, janela, hojeISO, baixar } from "../util.js";
-import { ETIOLOGIAS, SITUACOES_LESAO } from "../campos.js";
+import { ETIOLOGIAS, SITUACOES_LESAO, ASSINATURA } from "../campos.js";
 import { calcularPush, areaLesao, mapaEl } from "../formulario.js";
 import { gradeFotos, painelFinanceiro, escolherFotos, campoTxt, campoSel, campoData, cabecalho, painelPaciente, abas, quadro, pilula } from "./componentes.js";
 import { calcularPeDiabetico, temPeDiabetico, textoResumoPeDiabetico } from "../pediabetico.js";
@@ -83,7 +83,7 @@ async function abaResumo(corpo, p, admissoes, pe) {
                 h("div", null,
                   h("strong", null, (a.tipo === "readmissão" ? "Readmissão " : "Admissão ") + dataBR(a.data)),
                   h("small", null, [a.alta_em ? "alta em " + dataBR(a.alta_em) + (a.alta_motivo ? " (" + a.alta_motivo + ")" : "") : "em tratamento",
-                    (contagem[a.id] || 0) + " sessão(ões)", nomeDe(a.criado_por)].filter(Boolean).join(" · "))),
+                    (contagem[a.id] || 0) + " sessão(ões)"].filter(Boolean).join(" · "))),
                 h("div", { class: "acoes-linha" },
                   !a.alta_em ? h("button", { type: "button", class: "botao-link", onclick: () => darAlta(p, a, lesoes) }, "Dar alta") : null,
                   h("a", { href: `#/paciente/${p.id}/admissao/${a.id}`, class: "botao-link" }, "Abrir ficha")))))
@@ -189,7 +189,7 @@ async function abaSessoes(corpo, p, admissoes = []) {
           : null,
         minhas.length ? h("div", { class: "sessao-fotos" }, await gradeFotos(minhas)) : null,
         h("div", { class: "sessao-rodape" },
-          h("span", null, (nomeDe(e.criado_por) || "") + (editado ? " · editado em " + dataHoraBR(e.atualizado_em) : "")),
+          h("span", null, ASSINATURA + (editado ? " · editado em " + dataHoraBR(e.atualizado_em) : "")),
           h("a", { href: "#/evolucao/" + e.id, class: "botao-link" }, "Abrir / editar")),
       ),
     ));

@@ -82,7 +82,7 @@ export async function sincronizar(pasta, pacienteId = null, informar = () => {})
   const equipe = sessao.equipe;
 
   // Logo, figuras e fonte (para o prontuario.html abrir certinho)
-  for (const rec of ["icones/logo.png", "fontes/Montserrat.woff2", ...FIGURAS_CORPO.map((f) => f.arquivo)]) {
+  for (const rec of ["icones/logo.png", "fontes/Montserrat.woff2", ...FIGURAS_CORPO.flatMap((f) => [f.arquivo, f.png])]) {
     const partes = rec.split("/");
     const dir = await subpasta(pasta, partes.slice(0, -1).join("/"));
     if (await existe(dir, partes[partes.length - 1])) continue;

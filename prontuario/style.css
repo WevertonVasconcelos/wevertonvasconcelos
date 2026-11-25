@@ -229,20 +229,26 @@ select.linha, select.caixa-entrada {
 .tabela-plano textarea { display: block; width: 100%; min-height: 46px; border: 0; padding: 12px; resize: none; background: transparent; line-height: 1.4; }
 .tabela-plano textarea:focus { outline: none; background: #FBF8F2; }
 
-/* ---------- Mapa do corpo ---------- */
-.mapa-figuras { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; }
-.mapa-figura { position: relative; flex: 0 0 auto; }
+/* ---------- Mapa dos membros inferiores ---------- */
+.folha-topo { margin-bottom: 18px; }
+.mapa-figuras { display: flex; flex-wrap: wrap; gap: 14px 18px; justify-content: center; align-items: flex-end; }
+.mapa-item { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.mapa-item figcaption { font-size: .74rem; font-weight: 600; color: var(--suave); }
+.mapa-figura { position: relative; max-width: 100%; border: 1.6px solid var(--linha); border-radius: 10px; overflow: hidden; background: #fff; }
+.mapa-perna .mapa-figura { height: clamp(230px, 44vw, 400px); }
+.mapa-pe .mapa-figura { height: clamp(150px, 28vw, 240px); }
+.mapa-pe-perfil .mapa-figura { height: auto; width: clamp(280px, 46vw, 430px); }
 .mapa-figura img { display: block; width: 100%; height: 100%; object-fit: contain; user-select: none; -webkit-user-drag: none; }
-.mapa-corpo { width: 100%; }
-.mapa-perna, .mapa-pe-plantar { width: calc(36% - 6px); }
-.mapa-pe-lateral { width: calc(28% - 6px); }
+.mapa:not(.editavel) .mapa-perna .mapa-figura { height: 220px; }
+.mapa:not(.editavel) .mapa-pe .mapa-figura { height: 140px; }
+.mapa:not(.editavel) .mapa-pe-perfil .mapa-figura { width: 260px; }
 .mapa.editavel .mapa-figura { cursor: crosshair; }
 .mapa-marca {
   position: absolute; transform: translate(-50%, -50%); width: 24px; height: 24px; padding: 0; border-radius: 50%;
   background: var(--ameixa); color: var(--branco); border: 2px solid var(--branco); box-shadow: 0 1px 4px rgba(0, 0, 0, .35);
   font: 700 .7rem/20px var(--fonte); text-align: center; cursor: pointer;
 }
-.mapa-dica { font-size: .76rem; color: var(--suave); margin: 6px 0 0; }
+.mapa-dica { font-size: .78rem; color: var(--suave); margin: 10px 0 0; text-align: center; }
 
 /* ---------- Abas (paciente, admissão, evolução) ---------- */
 .abas { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 4px; scrollbar-width: none; }
@@ -435,3 +441,7 @@ select.caixa-entrada { padding-right: 30px; }
 .sim-config .rolagem { margin-top: 12px; }
 .sim-taxa { width: 90px; min-height: 36px; padding: 4px 8px; text-align: right; display: inline-block; }
 .tabela-ficha tr.total-linha td { background: var(--bege-claro); }
+
+/* Copiar avaliação da última sessão */
+.copiar-avaliacao { background: var(--bege-claro); border-radius: 12px; padding: 12px 14px; margin-bottom: 16px; }
+.copiar-avaliacao .botao { white-space: normal; text-align: left; }

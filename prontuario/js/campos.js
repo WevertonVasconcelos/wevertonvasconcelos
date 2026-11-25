@@ -97,12 +97,14 @@ export const ETIOLOGIAS = ["Pé diabético", "Úlcera venosa", "Úlcera arterial
 
 export const AVALIACAO = {
   titulo: ["AVALIAÇÃO DA", "LESÃO"],
+  topo: [
+    { tipo: "caixa", rotulo: "Local da lesão (membros inferiores):", campos: [{ id: "lesao_mapa", tipo: "mapa" }] },
+  ],
   colunas: [
     [
       {
         tipo: "caixa", rotulo: "Local da lesão + Medidas:",
         campos: [
-          { id: "lesao_mapa", tipo: "mapa" },
           { id: "lesao_local", rotulo: "Local", tipo: "texto", dica: "Ex.: pé D, região plantar do hálux" },
           { id: "lesao_etiologia", rotulo: "Etiologia", tipo: "opcao", opcoes: ETIOLOGIAS },
           {
@@ -189,13 +191,21 @@ export const TIPOS_PLANO = { mensal: "Plano mensal", pacote: "Pacote de sessões
 export const SITUACOES_PACIENTE = ["em tratamento", "alta", "inativo"];
 export const SITUACOES_LESAO = ["em tratamento", "cicatrizada", "encerrada"];
 
-// Figuras do corpo (iguais às da ficha de papel)
+// Figuras dos membros inferiores (foco do atendimento). "altura" é a altura de exibição relativa.
 export const FIGURAS_CORPO = [
-  { id: "corpo", arquivo: "icones/corpo/corpo.png", nome: "Corpo", largura: 442, altura: 312 },
-  { id: "perna", arquivo: "icones/corpo/perna.png", nome: "Perna", largura: 176, altura: 192 },
-  { id: "pe-lateral", arquivo: "icones/corpo/pe-lateral.png", nome: "Pé (lateral)", largura: 124, altura: 102 },
-  { id: "pe-plantar", arquivo: "icones/corpo/pe-plantar.png", nome: "Pé (planta)", largura: 222, altura: 222 },
+  { id: "membros-anterior", arquivo: "icones/membros/membros-anterior.svg", png: "icones/membros/membros-anterior.png", nome: "Vista anterior", largura: 260, altura: 570, grupo: "perna" },
+  { id: "membros-posterior", arquivo: "icones/membros/membros-posterior.svg", png: "icones/membros/membros-posterior.png", nome: "Vista posterior", largura: 260, altura: 570, grupo: "perna" },
+  { id: "pernas-lateral", arquivo: "icones/membros/pernas-lateral.svg", png: "icones/membros/pernas-lateral.png", nome: "Faces laterais", largura: 430, altura: 576, grupo: "perna" },
+  { id: "pernas-medial", arquivo: "icones/membros/pernas-medial.svg", png: "icones/membros/pernas-medial.png", nome: "Faces mediais", largura: 430, altura: 576, grupo: "perna" },
+  { id: "pes-planta", arquivo: "icones/membros/pes-planta.svg", png: "icones/membros/pes-planta.png", nome: "Plantas dos pés", largura: 260, altura: 294, grupo: "pe" },
+  { id: "pes-dorso", arquivo: "icones/membros/pes-dorso.svg", png: "icones/membros/pes-dorso.png", nome: "Dorsos dos pés", largura: 260, altura: 294, grupo: "pe" },
+  { id: "pes-lateral", arquivo: "icones/membros/pes-lateral.svg", png: "icones/membros/pes-lateral.png", nome: "Pés: faces laterais", largura: 640, altura: 195, grupo: "pe-perfil" },
+  { id: "pes-medial", arquivo: "icones/membros/pes-medial.svg", png: "icones/membros/pes-medial.png", nome: "Pés: faces mediais", largura: 640, altura: 195, grupo: "pe-perfil" },
 ];
+
+// Quem assina o prontuário (fichas, sessões, impressão e PDF)
+export const RESPONSAVEL = { nome: "Enf. Mariana Véras", titulo: "Enfermeira Dermatológica", registro: "COREN-PE 528.268" };
+export const ASSINATURA = `${RESPONSAVEL.nome} · ${RESPONSAVEL.titulo} · ${RESPONSAVEL.registro}`;
 
 // Lista "plana" de todos os campos que guardam valor (entra em caixas, grades etc.)
 export function camposDe(...folhas) {
@@ -206,6 +216,7 @@ export function camposDe(...folhas) {
     (c.campos || []).forEach(visitar);
   };
   folhas.forEach((f) => {
+    (f.topo || []).forEach(visitar);
     (f.colunas || []).forEach((col) => col.forEach(visitar));
     (f.rodape || []).forEach(visitar);
   });

@@ -112,7 +112,7 @@ async function gerarBackup(comArquivos, informar) {
       e.evolucao_materiais.reduce((s, m) => s + m.quantidade * m.custo_unitario, 0).toFixed(2).replace(".", ",")])]) });
 
   // Logo e figuras do corpo, para o prontuário legível abrir sem internet
-  for (const img of ["icones/logo.png", "fontes/Montserrat.woff2", ...FIGURAS_CORPO.map((f) => f.arquivo)]) {
+  for (const img of ["icones/logo.png", "fontes/Montserrat.woff2", ...FIGURAS_CORPO.flatMap((f) => [f.arquivo, f.png])]) {
     try {
       const r = await fetch(img);
       if (r.ok) arquivosZip.push({ nome: img, dados: new Uint8Array(await r.arrayBuffer()) });

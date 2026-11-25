@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 570" width="260" height="570">
+<rect width="260" height="570" fill="#fff"/>
+<path d="M 24 12 C 16 90 24 180 40 250 C 44 270 36 300 38 330 C 40 380 52 430 56 470 C 50 490 46 505 52 520 C 58 540 86 548 106 545 C 118 543 118 530 112 515 C 106 500 102 485 102 470 C 110 420 118 360 114 320 C 110 290 106 275 110 255 C 118 200 124 120 126 20 C 96 24 56 22 24 12 Z" fill="#fff" stroke="#3a3a3a" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 28 40 C 56 62 98 62 124 46" fill="none" stroke="#6b6b6b" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M 50 262 C 66 270 90 270 106 262" fill="none" stroke="#6b6b6b" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M 72 400 C 74 430 76 450 78 470" fill="none" stroke="#6b6b6b" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M 86 400 C 85 430 84 450 82 470" fill="none" stroke="#6b6b6b" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M 58 520 C 66 540 98 542 108 522" fill="none" stroke="#6b6b6b" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M 236 12 C 244 90 236 180 220 250 C 216 270 224 300 222 330 C 220 380 208 430 204 470 C 210 490 214 505 208 520 C 202 540 174 548 154 545 C 142 543 142 530 148 515 C 154 500 158 485 158 470 C 150 420 142 360 146 320 C 150 290 154 275 150 255 C 142 200 136 120 134 20 C 164 24 204 22 236 12 Z" fill="#fff" stroke="#3a3a3a" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 232 40 C 204 62 162 62 136 46" fill="none" stroke="#6b6b6b" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M 210 262 C 194 270 170 270 154 262" fill="none" stroke="#6b6b6b" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M 188 400 C 186 430 184 450 182 470" fill="none" stroke="#6b6b6b" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M 174 400 C 175 430 176 450 178 470" fill="none" stroke="#6b6b6b" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M 202 520 C 194 540 162 542 152 522" fill="none" stroke="#6b6b6b" stroke-width="1.5" stroke-linecap="round"/><text x="70" y="556" font-family="Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#8C7044" text-anchor="middle">E</text><text x="190" y="556" font-family="Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#8C7044" text-anchor="middle">D</text>
+</svg>
