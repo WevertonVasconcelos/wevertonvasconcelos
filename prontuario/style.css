@@ -1,0 +1,437 @@
+/* Prontuário Véras Vasconcelos
+   Visual copiado das folhas de atendimento da Mariana:
+   painel bege, quadros com título na borda, caixinhas quadradas,
+   tabelas com cabeçalho dourado, títulos "FICHA DE ANAMNESE" e arcos bege nos cantos. */
+
+@font-face { font-family: "Montserrat"; src: url("fontes/Montserrat.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+
+:root {
+  --bege: #D6CBB2;          /* painel e arcos */
+  --bege-claro: #EFE9DD;
+  --bege-linha: #8F8678;    /* linhas dentro do painel */
+  --dourado: #AE9869;       /* bordas de tabela, etiquetas */
+  --dourado-cab: #BBA982;   /* cabeçalho de tabela */
+  --ameixa: #3F2140;        /* roxo do logo, "PLANO DE CUIDADOS" */
+  --grafite: #373635;       /* texto e títulos */
+  --texto: #4A4845;
+  --suave: #77736D;
+  --borda: #989187;         /* contorno dos quadros e caixinhas */
+  --linha: #DAD8D4;
+  --branco: #FFFFFF;
+  --perigo: #9E3B3B;
+  --perigo-fundo: #F7EAE8;
+  --raio: 14px;
+  --fonte: "Montserrat", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --topo: 96px;
+  --menu-baixo: 0px;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; font-family: var(--fonte); font-size: 15px; line-height: 1.5;
+  color: var(--texto); background: var(--branco); -webkit-font-smoothing: antialiased;
+}
+[hidden] { display: none !important; }
+a { color: var(--ameixa); }
+h1, h2, h3 { color: var(--grafite); margin: 0; line-height: 1.2; }
+p { margin: .4em 0; }
+code { background: var(--bege-claro); padding: 1px 5px; border-radius: 4px; }
+
+/* ---------- Arcos bege dos cantos (como na folha) ---------- */
+.enfeite { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+.enfeite svg { position: absolute; fill: var(--bege); }
+.enfeite .arco-topo { top: 0; right: 0; width: min(300px, 45vw); }
+.enfeite .arco-esq { bottom: 0; left: 0; width: min(380px, 55vw); }
+.enfeite .arco-dir { bottom: 0; right: 0; width: min(240px, 35vw); }
+/* Dentro do app os arcos ficam só nas margens (nunca atrás do texto) */
+body.modo-app .enfeite svg { display: none; }
+@media (min-width: 1240px) {
+  body.modo-app .enfeite .arco-esq, body.modo-app .enfeite .arco-dir { display: block; width: min(300px, calc((100vw - 1020px) / 2)); }
+}
+
+/* ---------- Entrada (login) ---------- */
+.tela-centro { min-height: 100vh; min-height: 100dvh; display: grid; place-items: center; padding: 24px 16px; }
+.folha-login { width: 100%; max-width: 420px; background: var(--branco); border: 1.6px solid var(--borda); border-radius: 18px; padding: 28px 24px; }
+.logo-login { display: block; width: 300px; max-width: 86%; margin: 0 auto 10px; }
+.folha-login .titulo-ficha { text-align: center; margin: 4px 0 18px; }
+.centro { text-align: center; }
+
+/* ---------- Topo ---------- */
+.topo {
+  position: sticky; top: 0; z-index: 20; height: var(--topo);
+  display: flex; align-items: center; gap: 20px; padding: 0 max(18px, env(safe-area-inset-left));
+  background: var(--branco); border-bottom: 1.6px solid var(--bege);
+}
+.marca { display: flex; align-items: center; flex: none; }
+.marca img { height: 78px; width: auto; display: block; }
+.menu-principal { display: flex; gap: 6px; margin-left: auto; }
+.menu-principal a {
+  display: flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 8px;
+  text-decoration: none; color: var(--grafite); font-weight: 600; font-size: .82rem; letter-spacing: .04em; text-transform: uppercase;
+}
+.menu-principal a:hover { background: var(--bege-claro); }
+.menu-principal a.ativo { background: var(--dourado); color: var(--branco); }
+.menu-principal .icone { width: 18px; height: 18px; flex: none; }
+.menu-usuario { position: relative; }
+.menu-usuario summary {
+  list-style: none; cursor: pointer; padding: 8px 10px; border-radius: 8px; font-size: .82rem; color: var(--suave);
+  white-space: nowrap; max-width: 190px; overflow: hidden; text-overflow: ellipsis;
+}
+.menu-usuario summary::-webkit-details-marker { display: none; }
+.menu-usuario summary:hover { background: var(--bege-claro); }
+.menu-usuario-itens {
+  position: absolute; right: 0; top: calc(100% + 6px); min-width: 240px; padding: 6px;
+  background: var(--branco); border: 1.6px solid var(--borda); border-radius: 12px; display: flex; flex-direction: column;
+  box-shadow: 0 10px 30px rgba(55, 54, 53, .12);
+}
+.menu-usuario-itens button { text-align: left; background: none; border: 0; padding: 10px 12px; border-radius: 8px; font: inherit; color: var(--grafite); cursor: pointer; }
+.menu-usuario-itens button:hover { background: var(--bege-claro); }
+
+@media (max-width: 760px) {
+  :root { --topo: 76px; --menu-baixo: calc(64px + env(safe-area-inset-bottom)); }
+  .marca img { height: 62px; }
+  .menu-principal {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; height: var(--menu-baixo);
+    padding: 6px 6px env(safe-area-inset-bottom); gap: 4px; justify-content: space-around;
+    background: var(--branco); border-top: 1.6px solid var(--bege);
+  }
+  .menu-principal a { flex: 1; flex-direction: column; gap: 2px; padding: 6px 2px; font-size: .62rem; justify-content: center; }
+  .menu-principal .icone { width: 22px; height: 22px; }
+  .menu-usuario { margin-left: auto; }
+}
+
+/* ---------- Página ---------- */
+.conteudo { max-width: 980px; margin: 0 auto; padding: 22px 18px calc(40px + var(--menu-baixo)); }
+.tela > * + * { margin-top: 18px; }
+.carregando { padding: 48px 0; text-align: center; color: var(--suave); }
+
+/* Cabeçalho de cada tela: voltar à esquerda, título da ficha à direita */
+.cabecalho-ficha { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px 20px; flex-wrap: wrap; }
+.cabecalho-ficha .esquerda { min-width: 0; }
+.cabecalho-ficha .direita { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; margin-left: auto; }
+.voltar { display: inline-block; text-decoration: none; font-size: .85rem; font-weight: 600; color: var(--suave); }
+.voltar:hover { color: var(--ameixa); }
+.subtitulo { margin: 2px 0 0; font-size: 1.05rem; font-weight: 600; color: var(--grafite); overflow-wrap: anywhere; }
+.titulo-ficha { font-size: 1.6rem; font-weight: 400; letter-spacing: -.02em; text-transform: uppercase; color: var(--grafite); line-height: 1.1; }
+.titulo-ficha b { font-weight: 700; }
+.titulo-ficha.roxo { color: var(--ameixa); font-weight: 700; }
+@media (max-width: 560px) {
+  .titulo-ficha { font-size: 1.3rem; }
+  .cabecalho-ficha .direita { align-items: flex-start; margin-left: 0; width: 100%; }
+}
+.texto-suave { color: var(--suave); }
+.pequeno { font-size: .8rem; }
+.texto-corrido { white-space: pre-wrap; overflow-wrap: anywhere; }
+.vazio { padding: 22px 12px; text-align: center; color: var(--suave); }
+
+/* Etiqueta dourada ("Controle de sessões", "Paciente:", "TOTAL PUSH") */
+.pilula { display: inline-block; background: var(--dourado); color: var(--branco); font-weight: 700; font-size: .92rem; padding: 3px 11px; border-radius: 7px; }
+.linha-pilula { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+
+/* ---------- Painel bege de identificação ---------- */
+.painel { background: var(--bege); border-radius: 18px; padding: 14px 22px 20px; }
+.painel-grade { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px 28px; }
+.painel-campo { grid-column: span 6; display: flex; align-items: flex-end; gap: 10px; min-height: 46px; border-bottom: 1.6px solid var(--bege-linha); padding: 8px 0 4px; min-width: 0; }
+.painel-campo.meia { grid-column: span 3; }
+.painel-campo.terco { grid-column: span 2; }
+.painel-campo > .rotulo { flex: none; color: var(--grafite); font-size: .98rem; }
+.painel-campo > .valor { flex: 1; min-width: 0; font-weight: 600; color: var(--grafite); overflow-wrap: anywhere; }
+.painel-campo input, .painel-campo select {
+  flex: 1; min-width: 0; border: 0; background: transparent; padding: 2px 0; min-height: 30px;
+  font: inherit; font-size: 16px; font-weight: 600; color: var(--grafite); border-radius: 0; -webkit-appearance: none; appearance: none;
+}
+.painel-campo input:focus, .painel-campo select:focus { outline: none; box-shadow: none; }
+.painel-campo:focus-within { border-bottom-color: var(--ameixa); }
+.painel-campo.sem-linha { border-bottom: 0; }
+.painel .caixinha .quadrado { background: transparent; }
+@media (max-width: 640px) {
+  .painel { padding: 10px 16px 16px; }
+  .painel-campo.meia, .painel-campo.terco { grid-column: span 6; }
+}
+
+/* ---------- Folha (Anamnese, Avaliação, Plano) ---------- */
+.folha > .titulo-ficha { text-align: right; margin-bottom: 16px; }
+.folha-colunas { display: grid; gap: 18px; }
+.folha-colunas.duas { grid-template-columns: 1fr 1fr; gap: 18px 34px; }
+@media (max-width: 760px) { .folha-colunas.duas { grid-template-columns: 1fr; } }
+.folha-coluna > * + * { margin-top: 16px; }
+.folha-rodape { margin-top: 18px; }
+
+.rotulo-forte { display: block; font-weight: 700; font-size: .84rem; color: var(--grafite); }
+.rotulo-forte small { font-weight: 500; color: var(--suave); }
+
+/* Quadro com título na borda */
+fieldset.caixa { margin: 0; min-width: 0; border: 1.6px solid var(--borda); border-radius: var(--raio); padding: 12px 16px 16px; background: var(--branco); }
+fieldset.caixa > legend { padding: 0 8px; margin-left: 4px; font-weight: 700; font-size: .95rem; color: var(--grafite); }
+fieldset.caixa > * + * { margin-top: 12px; }
+fieldset.caixa > legend + * { margin-top: 4px; }
+.caixa-grande textarea { min-height: 150px; }
+.lado { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 400px) { .lado { grid-template-columns: 1fr; } }
+
+/* Caixinhas quadradas */
+.caixinhas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 14px; margin-top: 8px; }
+.caixinhas.uma-coluna { grid-template-columns: 1fr; }
+.caixinhas.em-linha { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 0; }
+.caixinha { position: relative; display: flex; align-items: center; gap: 10px; cursor: pointer; min-height: 30px; }
+.caixinha input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+.caixinha .quadrado {
+  flex: none; width: 24px; height: 24px; border: 1.6px solid var(--borda); border-radius: 6px; background: var(--branco);
+  display: grid; place-items: center; transition: background .12s, border-color .12s;
+}
+.caixinha .texto { font-size: .9rem; color: var(--texto); line-height: 1.25; }
+.caixinha input:checked + .quadrado { background: var(--dourado); border-color: var(--dourado); }
+.caixinha input:checked + .quadrado::after {
+  content: ""; width: 6px; height: 11px; border: solid var(--branco); border-width: 0 2.5px 2.5px 0; transform: translateY(-1px) rotate(45deg);
+}
+.caixinha input:checked ~ .texto { color: var(--grafite); font-weight: 600; }
+.caixinha input:focus-visible + .quadrado { outline: 2px solid var(--ameixa); outline-offset: 2px; }
+
+/* Perguntas Sim/Não */
+.pergunta-linha { display: flex; flex-direction: column; gap: 8px; }
+.pergunta.compacta .pergunta-linha { flex-direction: row; align-items: center; justify-content: space-between; gap: 12px; }
+.pergunta-sub { margin-top: 10px; }
+.pergunta-sub > * + * { margin-top: 10px; }
+.bloco-opcoes .caixinhas { margin-top: 8px; }
+
+/* Entradas */
+input, select, textarea { font: inherit; font-size: 16px; color: var(--grafite); }
+.linha {
+  width: 100%; min-height: 40px; padding: 6px 2px; border: 0; border-bottom: 1.6px solid var(--borda);
+  border-radius: 0; background: transparent; -webkit-appearance: none; appearance: none;
+}
+select.linha, select.caixa-entrada {
+  background-image: linear-gradient(45deg, transparent 50%, var(--suave) 50%), linear-gradient(135deg, var(--suave) 50%, transparent 50%);
+  background-position: calc(100% - 14px) 55%, calc(100% - 9px) 55%; background-size: 5px 5px; background-repeat: no-repeat; padding-right: 28px;
+}
+.caixa-entrada, .caixa-texto, .campo > textarea, .entrada {
+  width: 100%; min-height: 44px; padding: 9px 12px; background: var(--branco);
+  border: 1.6px solid var(--borda); border-radius: 9px; -webkit-appearance: none; appearance: none;
+}
+.caixa-texto, .campo > textarea { border-radius: 12px; resize: vertical; line-height: 1.5; }
+.caixa-entrada[readonly] { background: var(--bege-claro); color: var(--grafite); font-weight: 600; }
+.linha:focus { outline: none; border-bottom-color: var(--ameixa); }
+.caixa-entrada:focus, .caixa-texto:focus, .campo > textarea:focus, .entrada:focus { outline: none; border-color: var(--ameixa); box-shadow: 0 0 0 3px rgba(63, 33, 64, .1); }
+.campo .rotulo-forte { margin-bottom: 4px; }
+.campo + .campo { margin-top: 10px; }
+
+.grade-medidas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px 14px; }
+.medida label { display: block; font-weight: 700; font-size: .84rem; color: var(--grafite); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.medida label small { font-weight: 500; color: var(--suave); }
+
+/* Tabela do Plano de cuidados */
+.tabela-plano { width: 100%; border-collapse: collapse; }
+.tabela-plano th, .tabela-plano td { border: 1.6px solid var(--dourado); }
+.tabela-plano th { width: 34%; padding: 10px 8px; text-align: center; vertical-align: middle; }
+.tabela-plano th label { font-size: .72rem; font-weight: 700; letter-spacing: .02em; text-transform: uppercase; color: var(--ameixa); }
+.tabela-plano td { padding: 0; }
+.tabela-plano textarea { display: block; width: 100%; min-height: 46px; border: 0; padding: 12px; resize: none; background: transparent; line-height: 1.4; }
+.tabela-plano textarea:focus { outline: none; background: #FBF8F2; }
+
+/* ---------- Mapa do corpo ---------- */
+.mapa-figuras { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; }
+.mapa-figura { position: relative; flex: 0 0 auto; }
+.mapa-figura img { display: block; width: 100%; height: 100%; object-fit: contain; user-select: none; -webkit-user-drag: none; }
+.mapa-corpo { width: 100%; }
+.mapa-perna, .mapa-pe-plantar { width: calc(36% - 6px); }
+.mapa-pe-lateral { width: calc(28% - 6px); }
+.mapa.editavel .mapa-figura { cursor: crosshair; }
+.mapa-marca {
+  position: absolute; transform: translate(-50%, -50%); width: 24px; height: 24px; padding: 0; border-radius: 50%;
+  background: var(--ameixa); color: var(--branco); border: 2px solid var(--branco); box-shadow: 0 1px 4px rgba(0, 0, 0, .35);
+  font: 700 .7rem/20px var(--fonte); text-align: center; cursor: pointer;
+}
+.mapa-dica { font-size: .76rem; color: var(--suave); margin: 6px 0 0; }
+
+/* ---------- Abas (paciente, admissão, evolução) ---------- */
+.abas { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 4px; scrollbar-width: none; }
+.abas::-webkit-scrollbar { display: none; }
+.aba {
+  flex: none; padding: 7px 13px; border-radius: 8px; border: 1.6px solid transparent; background: none; cursor: pointer;
+  text-decoration: none; color: var(--grafite); font: 600 .84rem var(--fonte); white-space: nowrap;
+}
+.aba:hover { border-color: var(--bege); }
+.aba.ativa { background: var(--dourado); color: var(--branco); }
+.aba-corpo > * + * { margin-top: 18px; }
+
+/* ---------- Botões ---------- */
+.botao {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 10px 18px;
+  border-radius: 10px; border: 1.6px solid transparent; font: 700 .86rem var(--fonte); letter-spacing: .02em;
+  text-decoration: none; cursor: pointer; white-space: nowrap;
+}
+.botao:disabled { opacity: .55; cursor: wait; }
+.botao-primario { background: var(--ameixa); color: var(--branco); }
+.botao-primario:hover { background: #2C162D; }
+.botao-secundario { background: var(--branco); color: var(--grafite); border-color: var(--borda); }
+.botao-secundario:hover { border-color: var(--ameixa); color: var(--ameixa); }
+.botao-dourado { background: var(--dourado); color: var(--branco); }
+.botao-perigo { background: var(--perigo); color: var(--branco); }
+.botao-perigo-texto { background: none; color: var(--perigo); }
+.botao-perigo-texto:hover { background: var(--perigo-fundo); }
+.botao-pequeno { min-height: 36px; padding: 6px 12px; font-size: .8rem; }
+.botao-largo { width: 100%; }
+.botao-link { background: none; border: 0; padding: 4px 0; font: 700 .84rem var(--fonte); color: var(--ameixa); cursor: pointer; text-decoration: none; }
+.botao-link:hover { text-decoration: underline; }
+.botao-icone { flex: none; width: 40px; height: 40px; border-radius: 50%; border: 0; background: none; cursor: pointer; color: var(--suave); font-size: 1rem; }
+.botao-icone:hover { background: var(--bege-claro); color: var(--grafite); }
+:focus-visible { outline: 2px solid var(--ameixa); outline-offset: 2px; }
+
+.barra-salvar {
+  position: sticky; bottom: calc(var(--menu-baixo) + 10px); z-index: 10; display: flex; justify-content: flex-end; gap: 10px;
+  padding: 10px; background: rgba(255, 255, 255, .96); border: 1.6px solid var(--borda); border-radius: 14px;
+  box-shadow: 0 8px 26px rgba(55, 54, 53, .14);
+}
+.assinatura-ficha { display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; font-size: .85rem; color: var(--grafite); text-transform: uppercase; letter-spacing: .02em; padding: 6px 0; }
+.assinatura-ficha b { font-weight: 700; }
+.acoes-form { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+.erro { color: var(--perigo); background: var(--perigo-fundo); padding: 8px 12px; border-radius: 8px; font-size: .9rem; }
+
+/* ---------- Listas e tabelas ---------- */
+.tabela-ficha { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.tabela-ficha th {
+  background: var(--dourado-cab); color: var(--branco); text-transform: uppercase; font-weight: 700; font-size: .76rem;
+  letter-spacing: .03em; padding: 10px 12px; text-align: left; border: 1.6px solid var(--dourado-cab);
+}
+.tabela-ficha td { padding: 10px 12px; border: 1.6px solid var(--linha); vertical-align: top; }
+.tabela-ficha .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.tabela-ficha .centro { text-align: center; }
+.tabela-ficha tr.clicavel { cursor: pointer; }
+.tabela-ficha tr.clicavel:hover td { background: #FBF8F2; }
+.tabela-ficha tr.inativo td { color: var(--suave); }
+.tabela-ficha .negativo { color: var(--perigo); }
+.rolagem { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.col-data { width: 92px; white-space: nowrap; }
+
+.busca-linha { display: flex; flex-direction: column; gap: 10px; }
+.busca { width: 100%; min-height: 46px; padding: 10px 14px; border: 1.6px solid var(--borda); border-radius: 10px; background: var(--branco); }
+.busca:focus { outline: none; border-color: var(--ameixa); }
+
+.paciente-nome { font-weight: 700; color: var(--grafite); text-decoration: none; }
+.paciente-nome:hover { color: var(--ameixa); }
+.etiqueta { display: inline-block; font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; padding: 2px 8px; border-radius: 6px; background: var(--bege-claro); color: var(--suave); }
+
+.lista-simples { list-style: none; margin: 0; padding: 0; }
+.lista-simples li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 0; border-top: 1.6px solid var(--linha); }
+.lista-simples li:first-child { border-top: 0; padding-top: 2px; }
+.lista-simples li > div { display: flex; flex-direction: column; min-width: 0; }
+.lista-simples strong { color: var(--grafite); }
+.lista-simples small { color: var(--suave); font-size: .8rem; }
+
+.alertas { display: flex; flex-wrap: wrap; gap: 6px; }
+.alerta { font-size: .78rem; font-weight: 700; padding: 4px 10px; border-radius: 7px; background: var(--branco); color: var(--ameixa); border: 1.6px solid var(--ameixa); }
+.painel .alertas { margin-top: 14px; }
+
+.dois-quadros { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+@media (max-width: 760px) { .dois-quadros { grid-template-columns: 1fr; } }
+.cab-quadro { display: flex; justify-content: flex-end; margin-top: -6px; }
+
+/* Sessões (evoluções) */
+.sessao-texto { white-space: pre-wrap; overflow-wrap: anywhere; color: var(--grafite); }
+.sessao-meta { font-size: .78rem; color: var(--suave); margin-bottom: 4px; display: flex; gap: 6px 10px; flex-wrap: wrap; align-items: center; }
+.sessao-detalhes { font-size: .84rem; margin-top: 6px; color: var(--texto); }
+.sessao-detalhes b { color: var(--grafite); }
+.sessao-rodape { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 8px; font-size: .76rem; color: var(--suave); font-style: italic; }
+.push-selo { display: inline-block; font-size: .72rem; font-weight: 700; color: var(--ameixa); border: 1.6px solid var(--ameixa); border-radius: 6px; padding: 1px 7px; font-style: normal; }
+.resumo-push { font-weight: 700; color: var(--ameixa); font-size: .9rem; }
+
+/* Cicatrização (PUSH) */
+.tabela-push th:first-child, .tabela-push td:first-child { position: sticky; left: 0; background: var(--branco); }
+.tabela-push th { text-align: center; }
+.tabela-push th:first-child, .tabela-push td:first-child { width: 130px; min-width: 120px; }
+.tabela-push th:not(:first-child), .tabela-push td:not(:first-child) { min-width: 76px; }
+.tabela-push th:first-child { background: var(--branco); color: var(--ameixa); border-color: var(--dourado); text-align: left; }
+.tabela-push td { text-align: center; border-color: var(--dourado); white-space: nowrap; }
+.tabela-push td:first-child { text-align: left; font-weight: 700; font-size: .72rem; color: var(--ameixa); text-transform: uppercase; }
+.tabela-push tr.total td { font-weight: 700; color: var(--grafite); }
+.grafico-push { width: 100%; height: auto; display: block; }
+.grafico-push text { font-family: var(--fonte); }
+
+/* ---------- Fotos ---------- */
+.grade-fotos { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; margin: 8px 0 0; }
+.grade-fotos:empty { display: none; }
+.foto { position: relative; aspect-ratio: 1; padding: 0; border: 1.6px solid var(--linha); border-radius: 10px; overflow: hidden; background: var(--bege-claro); cursor: pointer; font: inherit; }
+.foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.foto-data { position: absolute; left: 0; right: 0; bottom: 0; padding: 14px 6px 4px; font-size: .68rem; color: #fff; text-align: left; background: linear-gradient(transparent, rgba(0, 0, 0, .6)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.foto-doc { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 4px; font-size: 2rem; padding: 6px; }
+.foto-doc small { font-size: .68rem; color: var(--suave); overflow-wrap: anywhere; text-align: center; }
+.foto-previa { cursor: default; }
+.foto-remover { position: absolute; top: 4px; right: 4px; width: 30px; height: 30px; border-radius: 50%; border: 0; background: rgba(55, 54, 53, .85); color: #fff; cursor: pointer; font-size: .8rem; }
+.sessao-fotos .grade-fotos { grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); }
+.visualizador { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.visualizador-img { max-width: 100%; max-height: 70vh; border-radius: 10px; object-fit: contain; background: var(--bege-claro); }
+.visualizador-legenda { color: var(--suave); font-size: .85rem; text-align: center; }
+.visualizador-botoes { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+
+/* Materiais na sessão */
+.linha-material { display: grid; grid-template-columns: 1fr 84px 40px; gap: 8px; align-items: center; margin-bottom: 8px; }
+.linha-total { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+
+/* Números (financeiro) */
+.numeros { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.numero { border: 1.6px solid var(--borda); border-radius: var(--raio); padding: 12px 16px; background: var(--branco); }
+.numero small { display: block; font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--suave); }
+.numero strong { display: block; font-size: 1.45rem; font-weight: 700; color: var(--grafite); font-variant-numeric: tabular-nums; }
+.numero.negativo strong { color: var(--perigo); }
+.numero.destaque { background: var(--bege); border-color: var(--bege); }
+.seletor-mes { min-height: 42px; padding: 6px 12px; border: 1.6px solid var(--borda); border-radius: 10px; background: var(--branco); }
+.painel-financeiro > * + * { margin-top: 16px; }
+
+/* Backup / impressão */
+.pilha-botoes { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
+progress { width: 100%; height: 8px; accent-color: var(--dourado); }
+.progresso { font-size: .9rem; color: var(--suave); }
+.quadro-impressao { width: 100%; height: 78vh; border: 1.6px solid var(--borda); border-radius: var(--raio); background: #fff; }
+fieldset.caixa ul, fieldset.caixa ol { margin: 6px 0; padding-left: 20px; }
+
+/* ---------- Janelas e avisos ---------- */
+.dialogo { width: min(440px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); overflow: auto; border: 1.6px solid var(--borda); border-radius: 18px; padding: 20px; color: var(--texto); box-shadow: 0 20px 60px rgba(0, 0, 0, .25); }
+.dialogo-largo { width: min(640px, calc(100vw - 32px)); }
+.dialogo::backdrop { background: rgba(55, 54, 53, .45); }
+.dialogo-topo { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.dialogo-topo h3 { font-size: 1.05rem; text-transform: uppercase; letter-spacing: -.01em; }
+.dialogo-botoes { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+.dialogo .campo + .campo, .dialogo .campo { margin-top: 12px; }
+.dialogo .campo label { display: block; font-weight: 700; font-size: .84rem; color: var(--grafite); }
+.dialogo .campo input, .dialogo .campo select { margin-top: 4px; }
+select.caixa-entrada { padding-right: 30px; }
+
+.aviso {
+  position: fixed; left: 50%; transform: translateX(-50%); z-index: 100; bottom: calc(var(--menu-baixo) + 20px);
+  max-width: min(520px, calc(100vw - 32px)); padding: 12px 18px; border-radius: 12px; background: var(--ameixa); color: #fff;
+  font-size: .9rem; box-shadow: 0 8px 30px rgba(0, 0, 0, .25);
+}
+.aviso-erro { background: var(--perigo); }
+.aviso-info { background: var(--dourado); }
+
+@media print { .topo, .menu-principal, .barra-salvar, .aviso, .enfeite { display: none !important; } }
+
+/* ---------- Pé diabético ---------- */
+.pd-bloco { margin-top: 18px; }
+.botao-pd { width: 100%; justify-content: center; }
+.pd-corpo { margin-top: 16px; padding: 18px; border: 1.6px dashed var(--dourado); border-radius: 18px; background: #FDFBF7; }
+.pd-corpo .folha > .titulo-ficha { margin-bottom: 12px; }
+.pd-quadro { margin-top: 18px; }
+.pd-resultado { display: grid; gap: 8px; }
+.pd-linha { display: grid; grid-template-columns: minmax(140px, 1fr) auto; gap: 2px 12px; padding: 6px 0; border-bottom: 1.6px solid var(--linha); }
+.pd-linha span { color: var(--texto); }
+.pd-linha b { color: var(--ameixa); text-align: right; }
+.pd-linha small { grid-column: 1 / -1; color: var(--suave); font-size: .78rem; }
+.pd-alerta { background: var(--perigo-fundo); color: var(--perigo); font-weight: 700; font-size: .86rem; padding: 8px 12px; border-radius: 8px; margin: 0; }
+.pd-fonte { font-size: .74rem; color: var(--suave); margin: 4px 0 0; }
+
+/* Readmissão e episódios */
+.aviso-ficha { background: var(--bege-claro); border-left: 4px solid var(--dourado); padding: 10px 14px; border-radius: 8px; font-size: .9rem; margin: 0; }
+.acoes-linha { display: flex; gap: 14px; flex: none; }
+.tabela-ficha tr.linha-episodio td { background: var(--bege-claro); font-weight: 700; font-size: .8rem; color: var(--ameixa); text-transform: uppercase; letter-spacing: .03em; }
+
+/* Simulador */
+.sim-grade { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 12px; }
+.sim-grade .medida label { white-space: normal; }
+.sim-form > .medida { margin-top: 4px; }
+.sim-config { border: 1.6px solid var(--borda); border-radius: var(--raio); padding: 12px 16px; background: var(--branco); }
+.sim-config summary { cursor: pointer; font-weight: 700; color: var(--grafite); }
+.sim-config .rolagem { margin-top: 12px; }
+.sim-taxa { width: 90px; min-height: 36px; padding: 4px 8px; text-align: right; display: inline-block; }
+.tabela-ficha tr.total-linha td { background: var(--bege-claro); }
