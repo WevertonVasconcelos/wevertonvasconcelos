@@ -5,6 +5,7 @@ import { htmlProntuario, buscarDadosProntuario, separarPorPaciente } from "../re
 import { cabecalho, quadro } from "./componentes.js";
 import * as pastaMac from "../pasta.js";
 import { FIGURAS_CORPO } from "../campos.js";
+import { gerarPdfProntuario } from "../pdf.js";
 
 const CHAVE = "prontuario.ultimoBackup";
 const DIAS_LEMBRETE = 7;
@@ -60,7 +61,7 @@ export async function telaBackup(tela) {
     ),
     quadro("O que vem no arquivo",
       h("ul", null,
-        h("li", null, "Uma pasta por paciente com o ", h("b", null, "prontuario.html"), " (abre em qualquer navegador, mesmo sem internet) e todas as fotos e exames."),
+        h("li", null, "Uma pasta por paciente com o ", h("b", null, "prontuario.pdf"), " (prontuário completo em páginas, com as fotos), o ", h("b", null, "prontuario.html"), " (abre em qualquer navegador, mesmo sem internet) e todas as fotos e exames."),
         h("li", null, "A pasta ", h("b", null, "dados"), " com tudo em formato JSON (para restaurar ou migrar) e planilhas CSV do financeiro."),
       ),
     ),
@@ -132,6 +133,7 @@ async function gerarBackup(comArquivos, informar) {
     arquivosZip.push({ nome: pastaDe[p.id] + "/prontuario.html", dados: html });
   }
 
+  const baixados = {};
   if (comArquivos) {
     const lista = tudo.arquivos;
     let feitos = 0;
@@ -142,7 +144,9 @@ async function gerarBackup(comArquivos, informar) {
         const a = fila.shift();
         try {
           const blob = await baixarArquivo(a.caminho);
-          arquivosZip.push({ nome: pastaDe[a.paciente_id] + "/" + nomeNoZip(a), dados: new Uint8Array(await blob.arrayBuffer()) });
+          const bytes = new Uint8Array(await blob.arrayBuffer());
+          baixados[a.caminho] = { bytes, tipo: a.tipo_mime };
+          arquivosZip.push({ nome: pastaDe[a.paciente_id] + "/" + nomeNoZip(a), dados: bytes });
         } catch (e) {
           falhas.push(a.caminho);
         }
@@ -157,13 +161,30 @@ async function gerarBackup(comArquivos, informar) {
     }
   }
 
+
+  // PDF do prontuário de cada paciente (com as fotos, no backup completo)
+  for (let i = 0; i < tudo.pacientes.length; i++) {
+    const p = tudo.pacientes[i];
+    informar(`Gerando PDF ${i + 1} de ${tudo.pacientes.length}: ${p.nome}`, 96);
+    try {
+      const pdf = await gerarPdfProntuario(separarPorPaciente(tudo, p, equipe), {
+        imagem: comArquivos ? async (a) => (baixados[a.caminho] ? new Blob([baixados[a.caminho].bytes], { type: baixados[a.caminho].tipo }) : null) : null,
+        geradoPor: sessao.membro && sessao.membro.nome,
+      });
+      arquivosZip.push({ nome: pastaDe[p.id] + "/prontuario.pdf", dados: new Uint8Array(await pdf.arrayBuffer()) });
+    } catch (e) {
+      console.error("PDF não gerado", p.nome, e);
+    }
+  }
+
   arquivosZip.unshift({
     nome: "LEIA-ME.txt",
     dados: [
       "Backup do Prontuário Véras Vasconcelos",
       "Gerado em " + dataHoraBR(new Date().toISOString()) + (sessao.membro ? " por " + sessao.membro.nome : ""),
       "",
-      "pacientes/  -> uma pasta por paciente. Abra o prontuario.html no navegador.",
+      "pacientes/  -> uma pasta por paciente: prontuario.pdf (para imprimir ou enviar),",
+      "               prontuario.html (abre no navegador) e as fotos e exames.",
       "dados/      -> todos os registros em JSON (para restaurar) e planilhas CSV.",
       comArquivos ? "" : "ATENÇÃO: este backup é só dos dados, sem fotos e exames.",
       "",

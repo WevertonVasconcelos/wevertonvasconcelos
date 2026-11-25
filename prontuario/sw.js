@@ -1,14 +1,14 @@
 // Permite instalar o prontuário como aplicativo e abrir a tela mais rápido.
 // Os DADOS dos pacientes nunca ficam guardados aqui: sempre vêm do Supabase.
 // Ao mudar qualquer arquivo do site, aumente o número da VERSAO.
-const VERSAO = "prontuario-v3";
+const VERSAO = "prontuario-v4";
 const ARQUIVOS = [
   "./", "index.html", "style.css", "config.js", "manifest.webmanifest",
   "vendor/supabase.js",
   "js/app.js", "js/banco.js", "js/util.js", "js/campos.js", "js/formulario.js", "js/relatorio.js",
   "js/telas/pacientes.js", "js/telas/paciente.js", "js/telas/admissao.js", "js/telas/evolucao.js",
   "js/telas/materiais.js", "js/telas/financeiro.js", "js/telas/backup.js", "js/telas/imprimir.js",
-  "js/telas/componentes.js", "js/telas/simulador.js", "js/pediabetico.js", "js/pasta.js",
+  "js/telas/componentes.js", "js/telas/simulador.js", "js/pediabetico.js", "js/pasta.js", "js/pdf.js", "vendor/jspdf.umd.min.js",
   "fontes/Montserrat.woff2",
   "icones/logo.png", "icones/icone-192.png",
   "icones/corpo/corpo.png", "icones/corpo/perna.png", "icones/corpo/pe-lateral.png", "icones/corpo/pe-plantar.png",

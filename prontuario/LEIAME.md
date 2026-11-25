@@ -99,13 +99,23 @@ Salve com **Commit changes**. (Ou mande as duas informações para o Claude pree
 ## Passo 6: primeiro uso
 
 1. **Materiais**: cadastre os materiais mais usados com o custo de cada um.
-2. **Financeiro > Simulador de curativos**: confira as taxas em *Configurações* (vieram da planilha
+2. **Simulador** (menu): na aba *Planos de curativos*, confira as taxas em *Configurações* (vieram da planilha
    SIMULADOR DE CURATIVOS TESTE: Clinical Center 20%, cartão 2x 6%, 3x 8,4%, Simples 6%).
+   A aba *Preço de produtos* segue a planilha "Simulador de Precificação - Produtos para Feridas".
 3. **Pacientes > Novo paciente**: ao salvar, o sistema já abre a anamnese.
 4. Em **Avaliação da lesão**, o botão **Abrir avaliação de pé diabético** abre a parte do pé diabético
    (abre sozinha quando a etiologia é "Pé diabético").
 5. A cada atendimento: **+ Nova sessão**. Quando o tratamento terminar: **Resumo > Dar alta**.
    Se o paciente voltar: **Readmitir (novo episódio)**.
+
+## PDF do prontuário
+
+- No paciente: **Resumo > Baixar PDF do prontuário**. Sai um arquivo `Prontuario - Nome do Paciente.pdf`, em
+  páginas A4 no visual da ficha: identificação, alertas, e para cada episódio (admissão/readmissão) a
+  Ficha de Anamnese, a Avaliação da Lesão (com o mapa do corpo), a Avaliação do Pé Diabético (se preenchida),
+  o Plano de Cuidados e o Controle de Sessões com as fotos; no fim, a Cicatrização (PUSH) e a lista de exames.
+  O financeiro **não** entra no PDF (é documento clínico).
+- O backup completo e a pasta do Mac também trazem o `prontuario.pdf` de cada paciente.
 
 ## Backup (importante)
 
@@ -165,7 +175,9 @@ uma pergunta, copie uma linha parecida e troque o `id` e o `rotulo`. Regras:
 | `js/telas/` | Cada tela (pacientes, paciente, admissão, sessão, materiais, financeiro, simulador, backup, impressão) |
 | `js/pediabetico.js` | **Avaliação do pé diabético** (IWGDF 2023): campos e cálculos (risco, infecção, SINBAD, WIfI) |
 | `js/pasta.js` | Grava a pasta de cada paciente no Mac (Chrome/Edge) |
-| `js/telas/simulador.js` | Simulador de curativos (mesma lógica da planilha) |
+| `js/pdf.js` | Monta o PDF do prontuário (páginas A4 com fotos) |
+| `vendor/jspdf.umd.min.js` | Biblioteca jsPDF 2.5.2 (licença MIT), que gera o PDF |
+| `js/telas/simulador.js` | Simulador: planos de curativos e preço de produtos (mesma lógica das planilhas) |
 | `js/relatorio.js` | Monta o prontuário legível (impressão e backup) |
 | `sw.js`, `manifest.webmanifest`, `icones/` | O que faz virar app no celular |
 | `fontes/` | Montserrat (licença OFL), a fonte da ficha |

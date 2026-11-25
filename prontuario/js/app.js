@@ -9,7 +9,7 @@ import { telaMateriais } from "./telas/materiais.js";
 import { telaFinanceiro } from "./telas/financeiro.js";
 import { telaBackup, lembreteBackup } from "./telas/backup.js";
 import { telaImprimir } from "./telas/imprimir.js";
-import { telaSimulador } from "./telas/simulador.js";
+import { telaSimulador, telaSimuladorProdutos } from "./telas/simulador.js";
 import { sincronizarAoEntrar } from "./pasta.js";
 
 const telas = {
@@ -35,7 +35,9 @@ const rotas = [
   [/^#\/evolucao\/([\w-]+)$/, (m, id) => telaEvolucao(m, null, id), "pacientes"],
   [/^#\/materiais$/, telaMateriais, "materiais"],
   [/^#\/financeiro$/, telaFinanceiro, "financeiro"],
-  [/^#\/financeiro\/simulador$/, telaSimulador, "financeiro"],
+  [/^#\/simulador$/, telaSimulador, "simulador"],
+  [/^#\/simulador\/produtos$/, telaSimuladorProdutos, "simulador"],
+  [/^#\/financeiro\/simulador$/, telaSimulador, "simulador"],
   [/^#\/backup$/, telaBackup, "backup"],
 ];
 

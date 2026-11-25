@@ -1,11 +1,13 @@
 // Pasta do prontuário no Mac (e, se ela estiver dentro do Google Drive, na nuvem também).
 // Usa o recurso do Google Chrome/Edge que deixa o site gravar numa pasta escolhida por você.
 // Cada paciente ganha a pasta  Pacientes/<Nome> - <código>/  com:
-//   prontuario.html (abre sem internet), arquivos/ (fotos e exames) e dados.json
+//   prontuario.pdf (para imprimir/enviar), prontuario.html (abre sem internet),
+//   arquivos/ (fotos e exames) e dados.json
 import { sb, q, sessao, baixarArquivo } from "./banco.js";
 import { nomeArquivoSeguro, avisar } from "./util.js";
 import { FIGURAS_CORPO } from "./campos.js";
 import { htmlProntuario, buscarDadosProntuario, separarPorPaciente } from "./relatorio.js";
+import { gerarPdfProntuario } from "./pdf.js";
 
 export const suportado = typeof window !== "undefined" && "showDirectoryPicker" in window;
 
@@ -93,6 +95,11 @@ export async function sincronizar(pasta, pacienteId = null, informar = () => {})
     informar(`Paciente ${i + 1} de ${tudo.pacientes.length}: ${p.nome}`);
     const base = pastaDoPaciente(p);
     const dados = separarPorPaciente(tudo, p, equipe);
+    // "Impressão digital" do paciente: se nada mudou desde a última vez, não refaz o PDF
+    const marca = JSON.stringify([p.atualizado_em, ...["admissoes", "lesoes", "evolucoes", "arquivos"].map((k) =>
+      dados[k].length + ":" + dados[k].reduce((m, x) => (x.atualizado_em > m ? x.atualizado_em : m), ""))]);
+    const dirPac = await subpasta(pasta, base);
+    const igual = (await ler("marca-" + p.id)) === marca && (await existe(dirPac, "prontuario.pdf"));
     const html = htmlProntuario(dados, { srcArquivo: nomeDoArquivo, base: "../../", geradoPor: sessao.membro && sessao.membro.nome });
     await gravar(pasta, base + "/prontuario.html", html);
     await gravar(pasta, base + "/dados.json", JSON.stringify(dados, null, 2));
@@ -107,6 +114,16 @@ export async function sincronizar(pasta, pacienteId = null, informar = () => {})
         novos++;
       } catch (e) { console.error("arquivo não baixado", a.caminho, e); }
     }
+    // PDF do prontuário, com as fotos que já estão na pasta
+    if (!igual) try {
+      informar(`Gerando PDF: ${p.nome}`);
+      const pdf = await gerarPdfProntuario(dados, {
+        imagem: async (a) => { try { return await (await dirArq.getFileHandle(nomeDoArquivo(a).split("/").pop())).getFile(); } catch (e) { return null; } },
+        geradoPor: sessao.membro && sessao.membro.nome,
+      });
+      await gravar(pasta, base + "/prontuario.pdf", pdf);
+      await guardar("marca-" + p.id, marca);
+    } catch (e) { console.error("PDF não gerado", p.nome, e); }
   }
   await guardar("ultima-sinc", new Date().toISOString());
   return { pacientes: tudo.pacientes.length, novos };
