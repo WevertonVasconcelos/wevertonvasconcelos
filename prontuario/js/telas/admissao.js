@@ -55,6 +55,8 @@ export async function telaAdmissao(tela, pacienteId, admissaoId) {
   const areaFinanceiro = h("div");
   const form = h("form", { oninput: (ev) => {
     edicao.suja = true; atualizarPush();
+    // Medidas da lesão mudam o item "Área" do SINBAD: atualiza o resultado também
+    if (!blocoPe.el.contains(ev.target)) blocoPe.atualizar();
     if (ev.target.name === "lesao_etiologia" && ev.target.value === "Pé diabético") blocoPe.abrir();
   } });
 

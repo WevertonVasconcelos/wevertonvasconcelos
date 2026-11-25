@@ -126,7 +126,7 @@ export async function telaEvolucao(tela, pacienteIdNovo, evolucaoId) {
     barraAbas.replaceChildren(abas([["sessao", "Sessão"], ["avaliacao", "Avaliação da lesão"], ["materiais", "Materiais e pagamento"]], k, mostrarAba));
   }
 
-  const form = h("form", { oninput: () => { edicao.suja = true; atualizarPush(); },
+  const form = h("form", { oninput: (ev) => { edicao.suja = true; atualizarPush(); if (!blocoPe.el.contains(ev.target)) blocoPe.atualizar(); },
     onchange: (ev) => {
       if (ev.target.name === "lesao_id") {
         const l = lesoes.find((x) => x.id === ev.target.value);
