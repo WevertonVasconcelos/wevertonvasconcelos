@@ -1,7 +1,7 @@
 // Sessão (evolução): procedimento, fotos, avaliação da lesão, materiais usados e pagamento.
 import { sb, q, enviarArquivo, sessao } from "../banco.js";
 import { h, moeda, numeroOuNulo, paraInputDataHora, dataLocalISO, dataBR, avisar, mensagemErro, edicao, confirmar } from "../util.js";
-import { AVALIACAO, OMITIR_NA_EVOLUCAO, TIPOS_ATENDIMENTO, LOCAIS_ATENDIMENTO, FORMAS_PAGAMENTO, camposDe } from "../campos.js";
+import { AVALIACAO, OMITIR_NA_EVOLUCAO, TIPOS_ATENDIMENTO, LOCAIS_ATENDIMENTO, FORMAS_PAGAMENTO, camposDe, ASSINATURA } from "../campos.js";
 import { folhaEl, lerCampos, calcularPush, textoPush } from "../formulario.js";
 import { escolherFotos, gradeFotos, abas, quadro, cabecalho } from "./componentes.js";
 import { blocoPeDiabetico, CAMPOS_PE_DIABETICO } from "../pediabetico.js";
@@ -174,8 +174,7 @@ export async function telaEvolucao(tela, pacienteIdNovo, evolucaoId) {
       }
     } },
     barraAbas, abaSessao, abaAvaliacao, abaMateriais,
-    h("p", { class: "assinatura-ficha" }, h("span", null, "Carimbo: ", h("b", null,
-      [sessao.membro && sessao.membro.nome, sessao.membro && sessao.membro.registro].filter(Boolean).join(" · ")))),
+    h("p", { class: "assinatura-ficha" }, h("span", null, "Assinatura: ", h("b", null, ASSINATURA))),
     h("div", { class: "barra-salvar" },
       h("a", { href: `#/paciente/${pacienteId}/sessoes`, class: "botao botao-secundario" }, "Cancelar"),
       h("button", { type: "submit", class: "botao botao-primario" }, "Salvar sessão"),

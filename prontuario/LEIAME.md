@@ -181,6 +181,7 @@ uma pergunta, copie uma linha parecida e troque o `id` e o `rotulo`. Regras:
 | `js/relatorio.js` | Monta o prontuário legível (impressão e backup) |
 | `sw.js`, `manifest.webmanifest`, `icones/` | O que faz virar app no celular |
 | `fontes/` | Montserrat (licença OFL), a fonte da ficha |
-| `icones/logo.png`, `icones/corpo/` | Logo e figuras do corpo tirados da ficha de atendimento |
+| `icones/logo.png` | Logo tirado da ficha de atendimento |
+| `icones/membros/` | Desenhos dos membros inferiores (pernas e pés, D e E) para marcar o local da lesão |
 | `vendor/supabase.js` | Biblioteca oficial do Supabase, guardada aqui |
 | `supabase/setup.sql` | Cria tabelas, segurança, histórico e a pasta de fotos |

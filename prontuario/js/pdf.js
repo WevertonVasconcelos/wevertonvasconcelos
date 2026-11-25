@@ -3,7 +3,7 @@
 // (Anamnese, Avaliação da lesão, Pé diabético, Plano de cuidados, Controle de sessões),
 // Cicatrização (PUSH) e lista de exames/documentos.
 import { dataBR, dataHoraBR, idade, numeroBR, reduzirImagem, nomeArquivoSeguro } from "./util.js";
-import { ANAMNESE, AVALIACAO, PLANO_CUIDADOS, FIGURAS_CORPO, OMITIR_NA_EVOLUCAO } from "./campos.js";
+import { ANAMNESE, AVALIACAO, PLANO_CUIDADOS, FIGURAS_CORPO, OMITIR_NA_EVOLUCAO, ASSINATURA } from "./campos.js";
 import { valorTexto, areaLesao, calcularPush } from "./formulario.js";
 import { PE_DIABETICO, temPeDiabetico, calcularPeDiabetico, textoResumoPeDiabetico } from "./pediabetico.js";
 
@@ -75,12 +75,11 @@ export async function gerarPdfProntuario(dados, { imagem, geradoPor, informar = 
   const { paciente: p, admissoes, lesoes, evolucoes, arquivos, equipe } = dados;
   const doc = new jsPDF({ unit: "mm", format: "a4", compress: true });
   doc.setProperties({ title: "Prontuário - " + p.nome, author: "Véras Vasconcelos Medicina e Saúde" });
-  const membro = (id) => equipe.find((m) => m.user_id === id) || {};
-  const carimbo = (id) => [membro(id).nome, membro(id).registro].filter(Boolean).join(" · ");
+  const carimbo = () => ASSINATURA;
   const nomeLesao = Object.fromEntries(lesoes.map((l) => [l.id, l.nome]));
   const logo = await recurso("icones/logo.png");
   const figuras = {};
-  for (const f of FIGURAS_CORPO) figuras[f.id] = await recurso(f.arquivo);
+  for (const f of FIGURAS_CORPO) figuras[f.id] = await recurso(f.png);
 
   const M = 15, L = 180, TOPO = 34, BASE = 280;
   let y = TOPO;
@@ -162,27 +161,35 @@ export async function gerarPdfProntuario(dados, { imagem, geradoPor, informar = 
     }
     y += h + 5;
   }
+  // Desenha só as figuras que têm marca, lado a lado, quebrando a linha quando não cabe
   function mapa(marcas) {
     if (!marcas || !marcas.length) return;
-    const larguras = { corpo: L * 0.5, perna: L * 0.16, "pe-lateral": L * 0.13, "pe-plantar": L * 0.16 };
-    const alturas = FIGURAS_CORPO.map((f) => (figuras[f.id] ? (larguras[f.id] * figuras[f.id].h) / figuras[f.id].w : 0));
-    const h = Math.max(...alturas) + 4;
-    espaco(h);
-    let x = M;
-    FIGURAS_CORPO.forEach((f, i) => {
-      const img = figuras[f.id];
-      if (!img) return;
-      const w = larguras[f.id], hh = alturas[i], top = y + (h - 4 - hh);
-      doc.addImage(img.dados, img.formato, x, top, w, hh);
-      marcas.forEach((m, n) => {
-        if (m.f !== f.id) return;
-        const cx = x + m.x * w, cy = top + m.y * hh;
-        doc.setFillColor(...COR.ameixa); doc.setDrawColor(255, 255, 255); doc.setLineWidth(0.4); doc.circle(cx, cy, 2.2, "FD");
-        fonte("bold", 7, [255, 255, 255]); doc.text(String(n + 1), cx, cy + 0.9, { align: "center" });
-      });
-      x += w + 3;
-    });
-    y += h + 2;
+    const alturaGrupo = { perna: 70, pe: 42, "pe-perfil": 26 };
+    const figs = FIGURAS_CORPO.filter((f) => figuras[f.id] && marcas.some((m) => m.f === f.id))
+      .map((f) => ({ f, img: figuras[f.id], h: alturaGrupo[f.grupo], w: (alturaGrupo[f.grupo] * figuras[f.id].w) / figuras[f.id].h }));
+    let i = 0;
+    while (i < figs.length) {
+      const linha = [];
+      let largura = 0;
+      while (i < figs.length && (largura + figs[i].w <= L || !linha.length)) { linha.push(figs[i]); largura += figs[i].w + 6; i++; }
+      const h = Math.max(...linha.map((x) => x.h)) + 6;
+      espaco(h);
+      let x = M;
+      for (const { f, img, h: hh, w } of linha) {
+        const top = y + (h - 6 - hh);
+        doc.addImage(img.dados, img.formato, x, top, w, hh);
+        doc.setDrawColor(...COR.linha); doc.setLineWidth(0.2); doc.rect(x, top, w, hh);
+        marcas.forEach((m, n) => {
+          if (m.f !== f.id) return;
+          const cx = x + m.x * w, cy = top + m.y * hh;
+          doc.setFillColor(...COR.ameixa); doc.setDrawColor(255, 255, 255); doc.setLineWidth(0.4); doc.circle(cx, cy, 2.2, "FD");
+          fonte("bold", 7, [255, 255, 255]); doc.text(String(n + 1), cx, cy + 0.9, { align: "center" });
+        });
+        fonte("normal", 7, COR.suave); doc.text(limpo(f.nome), x + w / 2, top + hh + 3.5, { align: "center" });
+        x += w + 6;
+      }
+      y += h + 2;
+    }
   }
   function tabelaPlano(d) {
     const linhas = PLANO_CUIDADOS.colunas[0][0].campos.filter((c) => d[c.id]);
@@ -269,7 +276,7 @@ export async function gerarPdfProntuario(dados, { imagem, geradoPor, informar = 
       r1.length ? pares(r1) : paragrafo("Anamnese não preenchida.", 9.5, COR.suave, "italic");
       assinatura(adm.data, adm.criado_por);
 
-      titulo(...AVALIACAO.titulo, false, adm.dados.lesao_mapa ? 80 : 30);
+      titulo(...AVALIACAO.titulo, false, adm.dados.lesao_mapa ? 82 : 30);
       mapa(adm.dados.lesao_mapa);
       pares(respostas(AVALIACAO, adm.dados));
       const pu = calcularPush(adm.dados);
@@ -314,7 +321,7 @@ export async function gerarPdfProntuario(dados, { imagem, geradoPor, informar = 
       if (extra.length) pares(extra, 40);
       await fotos(arquivos.filter((a) => a.evolucao_id === ev.id && (a.tipo_mime || "").startsWith("image/")));
       fonte("italic", 8, COR.suave);
-      espaco(6); doc.text(limpo(carimbo(ev.criado_por)), M + L, y + 2, { align: "right" }); y += 7;
+      espaco(6); doc.text(limpo(carimbo()), M + L, y + 2, { align: "right" }); y += 7;
     }
   }
 

@@ -12,6 +12,7 @@ export function folhaEl(folha, valores = {}, { omitir = [], semTitulo = false } 
   const ctx = { valores, omitir: new Set(omitir) };
   const el = h("section", { class: "folha" },
     semTitulo ? null : tituloFicha(folha.titulo, folha.roxo),
+    folha.topo ? h("div", { class: "folha-topo" }, folha.topo.map((c) => campoEl(c, ctx))) : null,
     h("div", { class: "folha-colunas" + (folha.colunas.length > 1 ? " duas" : "") },
       folha.colunas.map((col) => h("div", { class: "folha-coluna" }, col.map((c) => campoEl(c, ctx))))),
     folha.rodape ? h("div", { class: "folha-rodape" }, folha.rodape.map((c) => campoEl(c, ctx))) : null,
@@ -134,14 +135,19 @@ function crescer(t) {
   t.style.height = t.scrollHeight + 2 + "px";
 }
 
-// ---------- Mapa do corpo ----------
-// marcas: [{ f: "corpo", x: 0.42, y: 0.31 }]
+// ---------- Mapa dos membros inferiores ----------
+// marcas: [{ f: "pes-planta", x: 0.42, y: 0.31 }]
 export function mapaEl(nome, valor, editavel) {
-  const marcas = Array.isArray(valor) ? valor.slice() : [];
+  const marcas = (Array.isArray(valor) ? valor : []).slice();
+  const conhecidas = new Set(FIGURAS_CORPO.map((f) => f.id));
   const oculto = editavel ? h("input", { type: "hidden", name: nome, value: JSON.stringify(marcas) }) : null;
-  const figuras = FIGURAS_CORPO.map((fig) => {
-    const caixa = h("div", { class: "mapa-figura mapa-" + fig.id, style: { aspectRatio: fig.largura + " / " + fig.altura } },
+  const mostrar = editavel ? FIGURAS_CORPO : FIGURAS_CORPO.filter((f) => marcas.some((m) => m.f === f.id));
+  if (!editavel && !mostrar.length) return null;
+  const caixas = {};
+  const itens = mostrar.map((fig) => {
+    const caixa = h("div", { class: "mapa-figura", style: { aspectRatio: fig.largura + " / " + fig.altura } },
       h("img", { src: fig.arquivo, alt: fig.nome, draggable: "false" }));
+    caixas[fig.id] = caixa;
     if (editavel) {
       caixa.addEventListener("click", (e) => {
         if (e.target.classList.contains("mapa-marca")) return;
@@ -150,29 +156,28 @@ export function mapaEl(nome, valor, editavel) {
         desenhar(true);
       });
     }
-    return caixa;
+    return h("figure", { class: "mapa-item mapa-" + fig.grupo }, caixa, h("figcaption", null, fig.nome));
   });
   function desenhar(mudou) {
-    figuras.forEach((caixa, i) => {
-      caixa.querySelectorAll(".mapa-marca").forEach((m) => m.remove());
-      marcas.forEach((m, n) => {
-        if (m.f !== FIGURAS_CORPO[i].id) return;
-        caixa.append(h(editavel ? "button" : "span", {
-          type: editavel ? "button" : null, class: "mapa-marca", style: { left: m.x * 100 + "%", top: m.y * 100 + "%" },
-          title: editavel ? "Tirar esta marca" : null, "aria-label": "Marca " + (n + 1),
-          onclick: editavel ? () => { marcas.splice(n, 1); desenhar(true); } : null,
-        }, String(n + 1)));
-      });
+    Object.values(caixas).forEach((c) => c.querySelectorAll(".mapa-marca").forEach((m) => m.remove()));
+    marcas.forEach((m, n) => {
+      const caixa = caixas[m.f];
+      if (!caixa) return;
+      caixa.append(h(editavel ? "button" : "span", {
+        type: editavel ? "button" : null, class: "mapa-marca", style: { left: m.x * 100 + "%", top: m.y * 100 + "%" },
+        title: editavel ? "Tirar esta marca" : null, "aria-label": "Marca " + (n + 1),
+        onclick: editavel ? () => { marcas.splice(n, 1); desenhar(true); } : null,
+      }, String(n + 1)));
     });
     if (oculto) {
-      oculto.value = JSON.stringify(marcas);
+      oculto.value = JSON.stringify(marcas.filter((m) => conhecidas.has(m.f)));
       if (mudou) oculto.dispatchEvent(new Event("input", { bubbles: true }));
     }
   }
   desenhar(false);
   return h("div", { class: "mapa" + (editavel ? " editavel" : "") },
-    h("div", { class: "mapa-figuras" }, figuras),
-    editavel ? h("p", { class: "mapa-dica" }, "Toque na figura para marcar o local. Toque no número para tirar.") : null,
+    h("div", { class: "mapa-figuras" }, itens),
+    editavel ? h("p", { class: "mapa-dica" }, "Toque no desenho para marcar o local da lesão (D = direito, E = esquerdo). Toque no número para tirar.") : null,
     oculto);
 }
 
