@@ -66,6 +66,8 @@ e a pasta de fotos no Google Fotos.
       com a anamnese da readmissão já preenchida com o histórico e as sessões ligadas ao episódio
 - [x] **Simulador de curativos** no Financeiro (mesma lógica da planilha SIMULADOR DE CURATIVOS TESTE),
       com histórico de simulações e botão para virar o plano do paciente
+- [x] **Simulador** no menu: planos de curativos e preço de produtos (planilha de precificação)
+- [x] **PDF do prontuário** em páginas, com fotos: botão no paciente, no backup e na pasta do Mac
 - [x] **Pasta de cada paciente no Mac** (e no Drive, se a pasta estiver no Google Drive) + link da pasta no cadastro
 - [x] Escala PUSH calculada e folha de Cicatrização com gráfico
 - [x] Lesões por paciente

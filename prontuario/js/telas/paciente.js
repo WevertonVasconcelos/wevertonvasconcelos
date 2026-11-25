@@ -1,6 +1,8 @@
 // Prontuário do paciente: resumo, controle de sessões, cicatrização (PUSH), fotos, documentos e financeiro.
-import { sb, q, nomeDe, enviarArquivo } from "../banco.js";
-import { h, dataBR, dataHoraBR, moeda, numeroBR, avisar, mensagemErro, janela, hojeISO } from "../util.js";
+import { sb, q, nomeDe, enviarArquivo, sessao, baixarArquivo } from "../banco.js";
+import { gerarPdfProntuario, nomePdf } from "../pdf.js";
+import { buscarDadosProntuario, separarPorPaciente } from "../relatorio.js";
+import { h, dataBR, dataHoraBR, moeda, numeroBR, avisar, mensagemErro, janela, hojeISO, baixar } from "../util.js";
 import { ETIOLOGIAS, SITUACOES_LESAO } from "../campos.js";
 import { calcularPush, areaLesao, mapaEl } from "../formulario.js";
 import { gradeFotos, painelFinanceiro, escolherFotos, campoTxt, campoSel, campoData, cabecalho, painelPaciente, abas, quadro, pilula } from "./componentes.js";
@@ -116,7 +118,8 @@ async function abaResumo(corpo, p, admissoes, pe) {
     ),
     h("div", { class: "acoes-form", style: { justifyContent: "center" } },
       h("a", { class: "botao botao-secundario", href: `#/paciente/${p.id}/editar` }, "Editar dados do paciente"),
-      h("a", { class: "botao botao-secundario", href: `#/paciente/${p.id}/imprimir` }, "Imprimir / PDF do prontuário")),
+      h("button", { type: "button", class: "botao botao-primario", onclick: (ev) => baixarPdf(p, ev.currentTarget) }, "Baixar PDF do prontuário"),
+      h("a", { class: "botao botao-secundario", href: `#/paciente/${p.id}/imprimir` }, "Imprimir")),
   );
 }
 
@@ -362,4 +365,26 @@ function darAlta(p, adm, lesoes) {
       fechar(); avisar("Alta registrada."); recarregar();
     } catch (e) { avisar(mensagemErro(e), "erro"); }
   });
+}
+
+async function baixarPdf(p, botao) {
+  const texto = botao.textContent;
+  botao.disabled = true;
+  try {
+    botao.textContent = "Buscando os registros…";
+    const tudo = await buscarDadosProntuario(sb, q, p.id);
+    const dados = separarPorPaciente(tudo, tudo.pacientes[0], sessao.equipe);
+    const blob = await gerarPdfProntuario(dados, {
+      imagem: (a) => baixarArquivo(a.caminho),
+      geradoPor: sessao.membro && sessao.membro.nome,
+      informar: (t) => (botao.textContent = t),
+    });
+    baixar(blob, nomePdf(p));
+    avisar("PDF gerado: " + nomePdf(p));
+  } catch (e) {
+    avisar("Não foi possível gerar o PDF: " + mensagemErro(e), "erro");
+  } finally {
+    botao.disabled = false;
+    botao.textContent = texto;
+  }
 }

@@ -11,8 +11,8 @@ export const TAXAS_PADRAO = {
   simples: 0.06,
 };
 
-export function abasFinanceiro(ativa) {
-  return abas([["mes", "Resumo do mês", "#/financeiro"], ["simulador", "Simulador de curativos", "#/financeiro/simulador"]], ativa);
+export function abasSimulador(ativa) {
+  return abas([["plano", "Planos de curativos", "#/simulador"], ["produto", "Preço de produtos", "#/simulador/produtos"]], ativa);
 }
 
 const r2 = (v) => Math.round(v * 100) / 100;
@@ -216,7 +216,7 @@ export async function telaSimulador(tela) {
 
   tela.append(
     cabecalho({ titulo: ["SIMULADOR DE", "CURATIVOS"] }),
-    abasFinanceiro("simulador"),
+    abasSimulador("plano"),
     h("div", { class: "dois-quadros" },
       quadro("Dados do plano", form),
       quadro("Descontos, despesas e resultado", saida,
@@ -228,4 +228,117 @@ export async function telaSimulador(tela) {
   );
   calcular();
   edicao.suja = false;
+}
+
+// ============================================================
+// Preço de produtos — mesma lógica da planilha
+// "Véras Vasconcelos | Simulador de Precificação - Produtos para Feridas"
+// ============================================================
+export function calcularProduto(e) {
+  const custo = e.custo || 0, margem = e.margem || 0;
+  const preco = margem < 1 ? r2(custo / (1 - margem)) : 0;
+  const tributos = r2(preco * (e.tributos || 0));
+  const taxaClinica = e.clinica === "Sim" ? r2(preco * 0.2) : 0;
+  const taxaCartao = e.cartao === "Sim" ? r2(preco * 0.06) : 0;
+  const despesas = r2(tributos + taxaClinica + taxaCartao);
+  const resultado = r2(preco - custo - despesas);
+  return { preco, lucroBruto: r2(preco - custo), tributos, taxaClinica, taxaCartao, despesas, resultado, margemContribuicao: preco ? resultado / preco : 0, pendente: !custo };
+}
+
+export async function telaSimuladorProdutos(tela) {
+  const simulacoes = await q(sb.from("simulacoes").select("*").eq("tipo", "produto").order("criado_em", { ascending: false }).limit(50));
+  const campo = (nome, rotulo, valor, dica) => h("div", { class: "medida" },
+    h("label", { for: "sp-" + nome }, rotulo),
+    h("input", { id: "sp-" + nome, name: nome, type: "text", class: "caixa-entrada", inputmode: "decimal", value: valor, placeholder: dica || "" }));
+  const simNao = (nome, rotulo, dica) => h("div", { class: "bloco-opcoes", dataset: { campo: nome } },
+    h("span", { class: "rotulo-forte" }, rotulo, h("small", null, " " + dica)),
+    h("div", { class: "caixinhas em-linha" }, ["Não", "Sim"].map((o) => h("label", { class: "caixinha" },
+      h("input", { type: "radio", name: nome, value: o, checked: o === "Não" }), h("span", { class: "quadrado" }), h("span", { class: "texto" }, o)))));
+
+  const form = h("form", { class: "sim-form" },
+    h("div", { class: "medida" }, h("label", { for: "sp-produto" }, "Produto"),
+      h("input", { id: "sp-produto", name: "produto", type: "text", class: "caixa-entrada", placeholder: "Ex.: creme de ureia 10%, suplemento, palmilha…" })),
+    h("div", { class: "grade-medidas sim-grade" },
+      campo("custo", "Custo de aquisição por unidade (R$)", "", "Preço pago pelo produto"),
+      campo("margem", "Margem bruta desejada (%)", "40", "Sobre o preço de venda"),
+      campo("tributos", "Tributos estimados (%)", "6", "Confirmar com a contabilidade"),
+    ),
+    simNao("clinica", "Venda sujeita à taxa da clínica?", "(Sim = 20% da receita)"),
+    simNao("cartao", "Pagamento no cartão?", "(Sim = 6% da receita, estimativa)"),
+  );
+  const saida = h("div");
+  let ultimo = null;
+  function ler() {
+    const f = form.elements;
+    const pct = (v) => (numeroOuNulo(v) || 0) / 100;
+    return {
+      produto: f.produto.value.trim(), custo: numeroOuNulo(f.custo.value), margem: pct(f.margem.value), tributos: pct(f.tributos.value),
+      clinica: form.querySelector('[name="clinica"]:checked').value, cartao: form.querySelector('[name="cartao"]:checked').value,
+    };
+  }
+  function calcular() {
+    const e = ler(), r = calcularProduto(e);
+    ultimo = { e, r };
+    const linha = (rot, v, nota) => h("tr", null, h("td", null, rot, nota ? h("small", { class: "texto-suave" }, " " + nota) : null), h("td", { class: "num" }, v ? moeda(v) : "–"));
+    saida.replaceChildren(
+      r.pendente ? h("p", { class: "pd-alerta" }, "Preencha o custo de aquisição.") : null,
+      h("div", { class: "numero destaque", style: { marginBottom: "12px" } }, h("small", null, "Preço de venda sugerido"), h("strong", null, r.pendente ? "–" : moeda(r.preco)),
+        h("small", null, "custo ÷ (1 − margem bruta)")),
+      h("table", { class: "tabela-ficha" },
+        h("thead", null, h("tr", null, h("th", null, "Resultados"), h("th", { class: "num" }, "Valor"))),
+        h("tbody", null,
+          linha("Lucro bruto por produto", r.lucroBruto, "(antes de tributos e taxas)"),
+          linha("Tributos estimados", r.tributos),
+          linha("Taxa da clínica", r.taxaClinica),
+          linha("Taxa do cartão", r.taxaCartao),
+          h("tr", { class: "total-linha" }, h("td", null, h("b", null, "Total de despesas variáveis")), h("td", { class: "num" }, h("b", null, moeda(r.despesas)))))),
+      h("div", { class: "numeros", style: { marginTop: "14px" } },
+        numero("Resultado por unidade", r.pendente ? "–" : moeda(r.resultado), r.resultado < 0 ? "negativo" : "destaque"),
+        numero("Margem de contribuição", r.pendente ? "–" : numeroBR(r.margemContribuicao * 100, 1) + "%", r.margemContribuicao < 0 ? "negativo" : "")),
+      h("ul", { class: "pequeno texto-suave" },
+        h("li", null, "Resultado não é lucro líquido: não inclui despesas fixas, perdas, frete e outros custos."),
+        h("li", null, "Margem = (preço de venda − custo) ÷ preço de venda."),
+        h("li", null, "Para vender produtos, confirme CNAE, licenças e tributação com a contabilidade.")),
+    );
+  }
+  form.addEventListener("input", calcular);
+  form.addEventListener("change", calcular);
+
+  async function salvar() {
+    const { e, r } = ultimo;
+    if (r.pendente) { avisar("Preencha o custo de aquisição.", "erro"); return; }
+    try {
+      await q(sb.from("simulacoes").insert({ tipo: "produto", descricao: e.produto || "Produto sem nome", dados: e, resultado: r }));
+      avisar("Simulação salva."); window.dispatchEvent(new HashChangeEvent("hashchange"));
+    } catch (err) { avisar(mensagemErro(err), "erro"); }
+  }
+
+  const historico = simulacoes.length
+    ? h("div", { class: "rolagem" }, h("table", { class: "tabela-ficha" },
+        h("thead", null, h("tr", null, h("th", null, "Data"), h("th", null, "Produto"), h("th", { class: "num" }, "Custo"), h("th", { class: "num" }, "Preço"),
+          h("th", { class: "num" }, "Resultado"), h("th", { class: "num" }, "Margem"), h("th", null, ""))),
+        h("tbody", null, simulacoes.map((s) => h("tr", null,
+          h("td", { class: "col-data" }, dataHoraBR(s.criado_em), h("div", { class: "pequeno texto-suave" }, nomeDe(s.criado_por))),
+          h("td", null, s.descricao || ""),
+          h("td", { class: "num" }, moeda(s.dados.custo)),
+          h("td", { class: "num" }, moeda(s.resultado.preco)),
+          h("td", { class: "num" + (s.resultado.resultado < 0 ? " negativo" : "") }, moeda(s.resultado.resultado)),
+          h("td", { class: "num" }, numeroBR((s.resultado.margemContribuicao || 0) * 100, 1) + "%"),
+          h("td", { class: "num" }, h("button", { type: "button", class: "botao-link", onclick: async () => {
+            if (!(await confirmar("Apagar esta simulação?", { sim: "Apagar", perigo: true }))) return;
+            try { await q(sb.from("simulacoes").delete().eq("id", s.id)); window.dispatchEvent(new HashChangeEvent("hashchange")); }
+            catch (err) { avisar(mensagemErro(err), "erro"); }
+          } }, "Apagar")),
+        )))))
+    : h("p", { class: "vazio" }, "Nenhuma simulação de produto salva ainda.");
+
+  tela.append(
+    cabecalho({ titulo: ["SIMULADOR DE", "PREÇO DE PRODUTOS"] }),
+    abasSimulador("produto"),
+    h("div", { class: "dois-quadros" },
+      quadro("Entradas", form),
+      quadro("Resultados", saida, h("div", { class: "acoes-form" }, h("button", { type: "button", class: "botao botao-primario", onclick: salvar }, "Salvar simulação")))),
+    h("div", null, h("div", { class: "linha-pilula" }, pilula("Simulações de produtos salvas")), historico),
+  );
+  calcular();
 }
