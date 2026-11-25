@@ -1,7 +1,7 @@
 // Permite instalar o prontuário como aplicativo e abrir a tela mais rápido.
 // Os DADOS dos pacientes nunca ficam guardados aqui: sempre vêm do Supabase.
 // Ao mudar qualquer arquivo do site, aumente o número da VERSAO.
-const VERSAO = "prontuario-v4";
+const VERSAO = "prontuario-v5";
 const ARQUIVOS = [
   "./", "index.html", "style.css", "config.js", "manifest.webmanifest",
   "vendor/supabase.js",
